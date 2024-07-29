@@ -27,25 +27,21 @@ void Map::printCamContent(std::string cam) {
     // Accept inputs like: Cam 1A, cam 1A, cam 1a, 1A, and 1a
 
     // Below lambda allows for easy, repeated function for two cases
-    auto lastLetterUpperCasing = [](std::string& s, int i) -> void {
-        if (s.size() == i) {
-            char temp = std::toupper(s[i-1]);
-            s[i-1] = temp;
-        }
+    auto letterUpperCasing = [](std::string& s, int i) -> void {
+        char temp = std::toupper(s[i]);
+        s[i] = temp;
     };
 
     std::string cam_name;
     if (cam.size() < 3) {
-        lastLetterUpperCasing(cam, 2);
+        letterUpperCasing(cam, 1);
         cam_name = "Cam ";
         cam_name += cam;
     }
     else {
-        if (!cam.empty()) {
-            char temp = std::toupper(cam[0]);
-            cam[0] = temp;
-        }
-        lastLetterUpperCasing(cam, 6);
+        // First one changes for first element
+        letterUpperCasing(cam, 0);
+        letterUpperCasing(cam, 5);
         cam_name = cam;
     }
     if (isCam(cam_name)) {
