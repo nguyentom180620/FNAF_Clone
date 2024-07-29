@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <iostream>
 #include <unordered_map>
 
 class Map {
@@ -14,7 +15,9 @@ class Map {
         }
     };
     std::unordered_map<std::string, Cam> cams{};
+    // private methods
+    bool isCam(std::string cam);
 public:
     Map();
-    bool isCam(std::string cam);
+    void printCamContent(std::string cam);
 };

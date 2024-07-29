@@ -1,11 +1,18 @@
 #include <SFML/Graphics.hpp>
 #include<iostream>
-
 #include "Map.h"
 
 int main() {
     Map map;
-    std::cout << std::boolalpha << map.isCam("Cam_1D") << std::endl;
+    std::string input;
+    while (true) {
+        getline(std::cin, input);
+        if (input == "end") {
+            break;
+        }
+
+        map.printCamContent(input);
+    }
 
     return 0;
 }
