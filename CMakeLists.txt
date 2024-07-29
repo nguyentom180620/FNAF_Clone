@@ -11,8 +11,10 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(main src/main.cpp
-        src/Map.h
-        src/Map.cpp)
+        src/map/Map.h
+        src/map/Map.cpp
+        src/animatronics/Base_Animatronic.h
+        src/animatronics/Base_Animatronic.cpp)
 target_link_libraries(main PRIVATE sfml-graphics)
 target_compile_features(main PRIVATE cxx_std_17)
 
