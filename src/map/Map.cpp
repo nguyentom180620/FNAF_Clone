@@ -28,6 +28,18 @@ void Map::Cam::addAnimatronic(Base_Animatronic& base) {
     }
 }
 
+void Map::Cam::removeAnimatronic(Base_Animatronic &base) {
+    for (int i = 0; i < animatronics.size(); i++) {
+        if (animatronics[i] == nullptr) {
+            continue;
+        }
+        if (*animatronics[i] == base) {
+            animatronics[i] = nullptr;
+            break;
+        }
+    }
+}
+
 std::vector<std::string> Map::Cam::getAnimatronicNames() {
     std::vector<std::string> animatronicNames {};
     for (const auto i : animatronics) {
@@ -38,12 +50,32 @@ std::vector<std::string> Map::Cam::getAnimatronicNames() {
     return animatronicNames;
 }
 
+const std::vector<std::string> Map::Cam::getAnimatronicNames() const {
+    std::vector<std::string> animatronicNames {};
+    for (const auto i : animatronics) {
+        if (i != nullptr) {
+            animatronicNames.push_back(i->getName());
+        }
+    }
+    return animatronicNames;
+}
+
+bool Map::Cam::operator==(Cam const &rhsCam) const {
+    if (name==rhsCam.name && animatronics == rhsCam.animatronics) {
+        return true;
+    }
+    return false;
+}
 
 bool Map::isCam(std::string cam) {
     if (cams.find(cam) != cams.end()) {
         return true;
     }
     return false;
+}
+
+const std::unordered_map<std::string, Map::Cam> Map::getCams() const {
+    return cams;
 }
 
 Map::Map() {
@@ -58,10 +90,38 @@ Map::Map() {
     cams["Cam 5"] = Cam("Cam 5");
     cams["Cam 6"] = Cam("Cam 6");
     cams["Cam 7"] = Cam("Cam 7");
+}
 
+Map::Cam &Map::accessCam(std::string &cam_name) {
+    return cams[cam_name];
+}
+
+const Map::Cam &Map::accessCam(std::string& cam_name) const {
+    return cams.at(cam_name);
+}
+
+const Map::Cam Map::find(Base_Animatronic const &base) const {
+    std::string base_name = base.getName();
+    auto iter = cams.begin();
+    for (; iter != cams.end(); ++iter) {
+        const std::vector<std::string> animatronicNames = iter->second.getAnimatronicNames();
+        for (const auto& i : animatronicNames) {
+            if (i == base_name) {
+                return iter->second;
+            }
+        }
+    }
+    return Cam("null");
+}
+
+
+void Map::addAnimatronic(Base_Animatronic &base) {
     cams["Cam 1A"].addAnimatronic(base);
-    Base_Animatronic frend("Frend", 1);
-    cams["Cam 1A"].addAnimatronic(frend);
+}
+
+void Map::moveAnimatronic(Base_Animatronic &base, Cam& oldCam, Cam& newCam) {
+    newCam.addAnimatronic(base);
+    oldCam.removeAnimatronic(base);
 }
 
 void Map::printCamContent(std::string cam) {

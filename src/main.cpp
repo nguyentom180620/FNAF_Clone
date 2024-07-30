@@ -1,18 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include<iostream>
-#include "map/Map.h"
+#include <iostream>
+#include "tom_engine/game_night/Game_Night.h"
 
 int main() {
-    Map map;
-    std::string input;
-    while (true) {
-        getline(std::cin, input);
-        if (input == "end") {
-            break;
-        }
-
-        map.printCamContent(input);
-    }
+    Game_Night night_1;
+    night_1.playNight();
 
     return 0;
 }
