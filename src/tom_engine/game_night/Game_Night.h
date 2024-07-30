@@ -1,5 +1,6 @@
 #pragma once
 #include "../../map/Map.h"
+#include "../../animatronics/Bonnie/Bonnie.h"
 
 class Game_Night {
     Map map;

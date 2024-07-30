@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
-#include "../animatronics/Base_Animatronic.h"
+#include "../animatronics/Base_Animatronic/Base_Animatronic.h"
 
 class Map {
     class Cam {

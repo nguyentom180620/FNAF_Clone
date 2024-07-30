@@ -13,10 +13,12 @@ FetchContent_MakeAvailable(SFML)
 add_executable(main src/main.cpp
         src/map/Map.h
         src/map/Map.cpp
-        src/animatronics/Base_Animatronic.h
-        src/animatronics/Base_Animatronic.cpp
+        src/animatronics/Base_Animatronic/Base_Animatronic.h
+        src/animatronics/Base_Animatronic/Base_Animatronic.cpp
         src/tom_engine/game_night/Game_Night.h
-        src/tom_engine/game_night/Game_Night.cpp)
+        src/tom_engine/game_night/Game_Night.cpp
+        src/animatronics/Bonnie/Bonnie.h
+        src/animatronics/Bonnie/Bonnie.cpp)
 target_link_libraries(main PRIVATE sfml-graphics)
 target_compile_features(main PRIVATE cxx_std_17)
 

@@ -12,8 +12,8 @@ void Game_Night::moveAnimatronic(Base_Animatronic &base) {
 }
 
 void Game_Night::playNight() {
-    Base_Animatronic base;
-    map.addAnimatronic(base);
+    Bonnie bonnie(1);
+    map.addAnimatronic(bonnie);
 
     int move_count = 0;
     while (true) {
@@ -23,7 +23,7 @@ void Game_Night::playNight() {
         }
         move_count++;
         if (move_count == 5) {
-            this->moveAnimatronic(base);
+            this->moveAnimatronic(bonnie);
             move_count = 0;
         }
 
