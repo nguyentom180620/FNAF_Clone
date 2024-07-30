@@ -2,7 +2,7 @@
 
 Game_Night::Game_Night() = default;
 
-void Game_Night::moveAnimatronic(Base_Animatronic &base) {
+void Game_Night::moveAnimatronic(Base_Animatronic& base) {
     // Right now, just testing to move base from Cam 1A to Cam 1B
     std::string cam_1A = "Cam 1A";
     std::string cam_1B = "Cam 1B";
@@ -14,6 +14,10 @@ void Game_Night::moveAnimatronic(Base_Animatronic &base) {
 void Game_Night::playNight() {
     Bonnie bonnie(1);
     map.addAnimatronic(bonnie);
+    const auto path_veticies = bonnie.getPath();
+    for (auto iter = path_veticies.begin(); iter != path_veticies.end(); ++iter) {
+        std::cout << iter->first << std::endl;
+    }
 
     int move_count = 0;
     while (true) {
