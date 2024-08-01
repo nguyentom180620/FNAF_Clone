@@ -1,9 +1,15 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <random>
 #include "tom_engine/game_night/Game_Night.h"
 
+// random number generator:
+// Reference: https://stackoverflow.com/questions/29549873/stdmt19937-doesnt-return-random-number
+// TODO: FIGURE OUT HOW LEFT DOOR WORKS, FOR NOW BONNIE MOVEMENT IS IMPLEMENTED!!
+static std::random_device rd;
+static std::mt19937 rng{rd()};
+
 int main() {
-    Game_Night night_1;
+    Game_Night night_1(rng);
     night_1.playNight();
 
     return 0;

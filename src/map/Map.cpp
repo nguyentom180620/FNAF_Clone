@@ -1,6 +1,6 @@
 #include "Map.h"
 
-const int NUM_OF_ANIMATRONICS = 4;
+constexpr unsigned int NUM_OF_ANIMATRONICS = 4;
 
 Map::Cam::Cam() {
     for (int i = 0; i < NUM_OF_ANIMATRONICS; i++) {
@@ -16,6 +16,10 @@ Map::Cam::Cam(std::string n) {
 }
 
 std::string Map::Cam::getName() {
+    return name;
+}
+
+const std::string Map::Cam::getName() const {
     return name;
 }
 

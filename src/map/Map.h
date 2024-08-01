@@ -13,6 +13,7 @@ class Map {
         Cam();
         Cam(std::string n);
         std::string getName();
+        const std::string getName() const;
         void addAnimatronic(Base_Animatronic& base);
         void removeAnimatronic(Base_Animatronic& base);
         std::vector<std::string> getAnimatronicNames();
