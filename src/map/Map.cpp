@@ -71,6 +71,10 @@ bool Map::Cam::operator==(Cam const &rhsCam) const {
     return false;
 }
 
+Map::Door::Door() {}
+
+Map::Door::Door(std::string n) : Cam(n) {}
+
 bool Map::isCam(std::string cam) {
     if (cams.find(cam) != cams.end()) {
         return true;
@@ -94,6 +98,8 @@ Map::Map() {
     cams["Cam 5"] = Cam("Cam 5");
     cams["Cam 6"] = Cam("Cam 6");
     cams["Cam 7"] = Cam("Cam 7");
+    // Left door will be a cam that is accessible differently from the rest in graphic version of game
+    cams["Left Door"] = Door("Left Door");
 }
 
 Map::Cam &Map::accessCam(std::string &cam_name) {

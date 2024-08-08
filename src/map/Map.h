@@ -20,6 +20,12 @@ class Map {
         const std::vector<std::string> getAnimatronicNames() const;
         bool operator==(Cam const& rhsCam) const;
     };
+    // Door inherits from Cams to access same functions
+    class Door : public Cam {
+    public:
+        Door();
+        Door(std::string n);
+    };
     std::unordered_map<std::string, Cam> cams{};
     // private methods
     bool isCam(std::string cam);
