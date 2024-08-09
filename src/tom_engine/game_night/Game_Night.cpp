@@ -35,17 +35,31 @@ void Game_Night::playNight() {
     }
 
     int move_count = 0;
+    bool doorClosed = false;
     while (true) {
         getline(std::cin, input);
         if (input == "end") {
             break;
         }
         move_count++;
+        if (input == "Close Door") {
+            std::cout << "You closed the door!" << std::endl;
+            doorClosed = true;
+            continue;
+        }
         if (move_count == 5) {
-            this->moveAnimatronic(bonnie);
+            if (map.animatronicAtDoor(bonnie, "Left Door")) {
+                if (!doorClosed) {
+                    std::cout << "Bonnie Jumpscare!" << std::endl;
+                    break;
+                }
+                std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
+                doorClosed = false;
+            }
+            // Problem comes from below function call (Bad_alloc)
+            moveAnimatronic(bonnie);
             move_count = 0;
         }
-
         map.printCamContent(input);
     }
 }

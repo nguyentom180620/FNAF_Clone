@@ -34,7 +34,7 @@ void Map::Cam::addAnimatronic(Base_Animatronic& base) {
 
 void Map::Cam::removeAnimatronic(Base_Animatronic &base) {
     for (int i = 0; i < animatronics.size(); i++) {
-        if (animatronics[i] == nullptr) {
+        if (!animatronics[i]) {
             continue;
         }
         if (*animatronics[i] == base) {
@@ -110,6 +110,20 @@ const Map::Cam &Map::accessCam(std::string& cam_name) const {
     return cams.at(cam_name);
 }
 
+Map::Cam Map::find(Base_Animatronic const &base) {
+    std::string base_name = base.getName();
+    auto iter = cams.begin();
+    for (; iter != cams.end(); ++iter) {
+        const std::vector<std::string> animatronicNames = iter->second.getAnimatronicNames();
+        for (const auto& i : animatronicNames) {
+            if (i == base_name) {
+                return iter->second;
+            }
+        }
+    }
+    return Cam("null");
+}
+
 const Map::Cam Map::find(Base_Animatronic const &base) const {
     std::string base_name = base.getName();
     auto iter = cams.begin();
@@ -130,8 +144,8 @@ void Map::addAnimatronic(Base_Animatronic &base) {
 }
 
 void Map::moveAnimatronic(Base_Animatronic &base, Cam& oldCam, Cam& newCam) {
-    newCam.addAnimatronic(base);
     oldCam.removeAnimatronic(base);
+    newCam.addAnimatronic(base);
 }
 
 void Map::printCamContent(std::string cam) {
@@ -140,11 +154,12 @@ void Map::printCamContent(std::string cam) {
 
     // Below lambda allows for easy, repeated function for two cases
     auto letterUpperCasing = [](std::string& s, int i) -> void {
-        char temp = std::toupper(s[i]);
-        s[i] = temp;
+        if (i >= 0 && i < s.size()) {
+            s[i] = std::toupper(s[i]);
+        }
     };
 
-    std::string cam_name;
+    std::string cam_name = "";
     if (cam.size() < 3) {
         letterUpperCasing(cam, 1);
         cam_name = "Cam ";
@@ -182,4 +197,11 @@ void Map::printCamContent(std::string cam) {
     else {
         std::cout << "Cam not found, try again" << std::endl;
     }
+}
+
+bool Map::animatronicAtDoor(Base_Animatronic &base, std::string door) {
+    if (find(base) == cams[door]) {
+        return true;
+    }
+    return false;
 }

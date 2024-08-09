@@ -34,8 +34,10 @@ public:
     Map();
     Cam& accessCam(std::string& cam_name);
     const Cam& accessCam(std::string& cam_name) const;
+    Cam find(Base_Animatronic const& base);
     const Cam find(Base_Animatronic const& base) const;
     void addAnimatronic(Base_Animatronic& base);
     void moveAnimatronic(Base_Animatronic& base, Cam& oldCam, Cam& newCam);
     void printCamContent(std::string cam);
+    bool animatronicAtDoor(Base_Animatronic& base, std::string door);
 };
