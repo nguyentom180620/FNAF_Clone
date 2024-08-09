@@ -3,6 +3,7 @@
 Game_Night::Game_Night() = default;
 
 Game_Night::Game_Night(std::mt19937 rng) {
+    office = nullptr;
     this->rng = rng;
 }
 
@@ -26,6 +27,19 @@ void Game_Night::moveAnimatronic(Base_Animatronic& base) {
     }
 }
 
+// This function should only be called when animatronics are at a door
+void Game_Night::enterOffice(Base_Animatronic &base) {
+    std::string door = map.find(base).getName();
+    if (map.find(base) == map.accessCam(door)) {
+        map.accessCam(door).removeAnimatronic(base);
+        office = &base;
+        std::cout << "Bonnie entered the office!" << std::endl;
+    }
+    else {
+        std::cout << "Something went wrong in Game_Night::enterOffice (Shouldn't be called right now)" << std::endl;
+    }
+}
+
 void Game_Night::playNight() {
     Bonnie bonnie(1);
     map.addAnimatronic(bonnie);
@@ -35,8 +49,17 @@ void Game_Night::playNight() {
     }
 
     int move_count = 0;
+    int bonnie_jumpscare_counter = 0;
+    bool enteredOffice = false;
     bool doorClosed = false;
     while (true) {
+        if (office) {
+            if (bonnie_jumpscare_counter >= 3) {
+                std::cout << "Bonnie Jumpscare!" << std::endl;
+                break;
+            }
+            bonnie_jumpscare_counter++;
+        }
         getline(std::cin, input);
         if (input == "end") {
             break;
@@ -50,14 +73,17 @@ void Game_Night::playNight() {
         if (move_count == 5) {
             if (map.animatronicAtDoor(bonnie, "Left Door")) {
                 if (!doorClosed) {
-                    std::cout << "Bonnie Jumpscare!" << std::endl;
-                    break;
+                    enterOffice(bonnie);
+                    enteredOffice = true;
                 }
-                std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
-                doorClosed = false;
+                else {
+                    std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
+                    doorClosed = false;
+                }
             }
-            // Problem comes from below function call (Bad_alloc)
-            moveAnimatronic(bonnie);
+            if (!enteredOffice) {
+                moveAnimatronic(bonnie);
+            }
             move_count = 0;
         }
         map.printCamContent(input);
