@@ -96,7 +96,7 @@ void Game_Night::playNight() {
             doorClosed = true;
             continue;
         }
-        if (move_count == 1) {
+        if (move_count == 5) {
             if (map.animatronicAtDoor(bonnie, "Left Door")) {
                 if (!doorClosed) {
                     enterOffice(bonnie);
