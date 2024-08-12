@@ -20,24 +20,18 @@ class Map {
         const std::vector<std::string> getAnimatronicNames() const;
         bool operator==(Cam const& rhsCam) const;
     };
-    // Door inherits from Cams to access same functions
-    class Door : public Cam {
-    public:
-        Door();
-        Door(std::string n);
-    };
     std::unordered_map<std::string, Cam> cams{};
     // private methods
-    bool isCam(std::string cam);
+    bool isCam(const std::string& cam);
     const std::unordered_map<std::string, Cam> getCams() const;
 public:
     Map();
-    Cam& accessCam(std::string& cam_name);
+    Cam& accessCam(const std::string& cam_name);
     const Cam& accessCam(std::string& cam_name) const;
     Cam find(Base_Animatronic const& base);
     const Cam find(Base_Animatronic const& base) const;
     void addAnimatronic(Base_Animatronic& base);
     void moveAnimatronic(Base_Animatronic& base, Cam& oldCam, Cam& newCam);
-    void printCamContent(std::string cam);
+    void printCamContent(std::string& cam);
     bool animatronicAtDoor(Base_Animatronic& base, std::string door);
 };

@@ -71,11 +71,7 @@ bool Map::Cam::operator==(Cam const &rhsCam) const {
     return false;
 }
 
-Map::Door::Door() {}
-
-Map::Door::Door(std::string n) : Cam(n) {}
-
-bool Map::isCam(std::string cam) {
+bool Map::isCam(const std::string& cam) {
     if (cams.find(cam) != cams.end()) {
         return true;
     }
@@ -99,10 +95,10 @@ Map::Map() {
     cams["Cam 6"] = Cam("Cam 6");
     cams["Cam 7"] = Cam("Cam 7");
     // Left door will be a cam that is accessible differently from the rest in graphic version of game
-    cams["Left Door"] = Door("Left Door");
+    cams["Left Door"] = Cam("Left Door");
 }
 
-Map::Cam &Map::accessCam(std::string &cam_name) {
+Map::Cam &Map::accessCam(const std::string &cam_name) {
     return cams[cam_name];
 }
 
@@ -148,28 +144,29 @@ void Map::moveAnimatronic(Base_Animatronic &base, Cam& oldCam, Cam& newCam) {
     newCam.addAnimatronic(base);
 }
 
-void Map::printCamContent(std::string cam) {
+void letterUpperCasing (std::string& s, int i) {
+    if (i >= 0 && i < s.size()) {
+        s[i] = std::toupper(s[i]);
+    }
+};
+
+void Map::printCamContent(std::string& cam) {
     // For now, have it print out cam name when user looks for it
     // Accept inputs like: Cam 1A, cam 1A, cam 1a, 1A, and 1a
 
-    // Below lambda allows for easy, repeated function for two cases
-    auto letterUpperCasing = [](std::string& s, int i) -> void {
-        if (i >= 0 && i < s.size()) {
-            s[i] = std::toupper(s[i]);
-        }
-    };
-
     std::string cam_name = "";
-    if (cam.size() < 3) {
-        letterUpperCasing(cam, 1);
-        cam_name = "Cam ";
-        cam_name += cam;
-    }
-    else {
-        // First one changes for first element
-        letterUpperCasing(cam, 0);
-        letterUpperCasing(cam, 5);
-        cam_name = cam;
+    if (cam.size() >= 2) {
+        if (cam.size() < 3) {
+            letterUpperCasing(cam, 1);
+            cam_name = "Cam ";
+            cam_name += cam;
+        }
+        else {
+            // First one changes for first element
+            letterUpperCasing(cam, 0);
+            letterUpperCasing(cam, 5);
+            cam_name = cam;
+        }
     }
 
     // Here is the first test, where cam just prints its cam name

@@ -22,7 +22,7 @@ int Base_Animatronic::getLevel() {
     return level;
 }
 
-const std::map<std::string, std::vector<std::string> > Base_Animatronic::getPath() const {
+const std::map<std::string, std::vector<std::string>>& Base_Animatronic::getPath() const {
     return path.getPathMap();
 }
 

@@ -14,6 +14,6 @@ public:
     const std::string getName() const;
     int getLevel();
     const int getLevel() const;
-    const std::map<std::string, std::vector<std::string>> getPath() const;
+    const std::map<std::string, std::vector<std::string>>& getPath() const;
     bool operator==(Base_Animatronic const& base) const;
 };
