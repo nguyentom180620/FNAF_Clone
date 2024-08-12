@@ -5,7 +5,7 @@ constexpr unsigned int GAME_LENGTH = 535;
 
 Game_Night::Game_Night() = default;
 
-Game_Night::Game_Night(std::mt19937 rng) {
+Game_Night::Game_Night(std::mt19937& rng) {
     office = nullptr;
     this->rng = rng;
 }
@@ -50,7 +50,7 @@ void Game_Night::playNight() {
     bool enteredOffice = false;
     bool doorClosed = false;
     bool playerAlive = true;
-    int gameTime = 0.0;
+    int gameTime = 0;
     while (true) {
         if (gameTime >= GAME_LENGTH) {
             break;
@@ -94,7 +94,6 @@ void Game_Night::playNight() {
         if (input == "Close Door") {
             std::cout << "You closed the door!" << std::endl;
             doorClosed = true;
-            continue;
         }
         if (move_count == 5) {
             if (map.animatronicAtDoor(bonnie, "Left Door")) {
@@ -114,6 +113,91 @@ void Game_Night::playNight() {
         }
         move_count++;
         map.printCamContent(input);
+        gameTime += 1;
+    }
+    if (playerAlive) {
+        std::cout << "6:00 AM! You lived!" << std::endl;
+    }
+    else {
+        std::cout << "You died..." << std::endl;
+    }
+}
+
+// This version to test and use in SFML for timer based night
+void Game_Night::playLiveNight() {
+    Bonnie bonnie(1);
+    map.addAnimatronic(bonnie);
+
+    int move_count = 0;
+    int bonnie_jumpscare_counter = 0;
+    bool enteredOffice = false;
+    bool doorClosed = false;
+    bool playerAlive = true;
+    int gameTime = 0;
+    while (true) {
+        if (gameTime >= GAME_LENGTH) {
+            break;
+        }
+        switch (gameTime) {
+            case 0:
+                std::cout << "12 AM" << std::endl;
+                break;
+            case 90:
+                std::cout << "1 AM" << std::endl;
+                break;
+            case 179:
+                std::cout << "2 AM" << std::endl;
+                break;
+            case 268:
+                std::cout << "3 AM" << std::endl;
+                break;
+            case 357:
+                std::cout << "4 AM" << std::endl;
+                break;
+            case 446:
+                std::cout << "5 AM" << std::endl;
+                break;
+            case GAME_LENGTH:
+                std::cout << "6 AM" << std::endl;
+                break;
+            default: ;
+        }
+        if (office) {
+            if (bonnie_jumpscare_counter >= 3) {
+                std::cout << "Bonnie Jumpscare!" << std::endl;
+                playerAlive = false;
+                break;
+            }
+            bonnie_jumpscare_counter++;
+        }
+        if (input == "end") {
+            break;
+        }
+        if (input == "Close Door") {
+            std::cout << "You closed the door!" << std::endl;
+            doorClosed = true;
+        }
+        if (move_count == 5) {
+            if (map.animatronicAtDoor(bonnie, "Left Door")) {
+                if (!doorClosed) {
+                    enterOffice(bonnie);
+                    enteredOffice = true;
+                }
+                else {
+                    std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
+                    doorClosed = false;
+                }
+            }
+            if (!enteredOffice) {
+                moveAnimatronic(bonnie);
+            }
+            move_count = 0;
+        }
+        move_count++;
+        if (input != "") {
+            map.printCamContent(input);
+            input = "";
+        }
         gameTime += 1;
     }
     if (playerAlive) {

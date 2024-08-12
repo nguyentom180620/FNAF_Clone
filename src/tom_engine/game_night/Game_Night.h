@@ -12,8 +12,9 @@ class Game_Night {
     std::mt19937 rng;
 public:
     Game_Night();
-    Game_Night(std::mt19937 rng);
+    Game_Night(std::mt19937& rng);
     void moveAnimatronic(Base_Animatronic& base);
     void enterOffice(Base_Animatronic& base);
     void playNight();
+    void playLiveNight();
 };
