@@ -155,7 +155,7 @@ void Map::printCamContent(std::string& cam) {
     // Accept inputs like: Cam 1A, cam 1A, cam 1a, 1A, and 1a
 
     std::string cam_name = "";
-    if (cam.size() >= 2) {
+    if (cam.size() >= 1) {
         if (cam.size() < 3) {
             letterUpperCasing(cam, 1);
             cam_name = "Cam ";
