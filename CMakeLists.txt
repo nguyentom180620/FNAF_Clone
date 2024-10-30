@@ -20,7 +20,8 @@ add_executable(main src/main.cpp
         src/animatronics/Bonnie/Bonnie.h
         src/animatronics/Bonnie/Bonnie.cpp
         src/animatronics/Base_Animatronic/Adjacency_List.h
-        src/animatronics/Base_Animatronic/Adjacency_List.cpp)
+        src/animatronics/Base_Animatronic/Adjacency_List.cpp
+        src/graphics/Left_Door.h)
 target_link_libraries(main PRIVATE sfml-graphics)
 target_compile_features(main PRIVATE cxx_std_17)
 
