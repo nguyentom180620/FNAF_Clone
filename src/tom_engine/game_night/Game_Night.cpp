@@ -1,8 +1,5 @@
 #include "Game_Night.h"
 
-// Number of seconds in a night (8 mins and 55 seconds)
-constexpr unsigned int GAME_LENGTH = 535;
-
 Game_Night::Game_Night() = default;
 
 Game_Night::Game_Night(std::mt19937& rng) {
@@ -123,7 +120,8 @@ void Game_Night::playNight() {
     }
 }
 
-// This version to test and use in SFML for timer based night
+// This version isn't used in game as the window while loop wouldn't work with this function,
+// but it is a model for what is used in the main() function
 void Game_Night::playLiveNight() {
     Bonnie bonnie(1);
     map.addAnimatronic(bonnie);
@@ -135,7 +133,7 @@ void Game_Night::playLiveNight() {
     bool playerAlive = true;
     int gameTime = 0;
     while (true) {
-        if (gameTime >= GAME_LENGTH) {
+        if (gameTime > GAME_LENGTH) {
             break;
         }
         switch (gameTime) {
@@ -160,7 +158,7 @@ void Game_Night::playLiveNight() {
             case GAME_LENGTH:
                 std::cout << "6 AM" << std::endl;
                 break;
-            default: ;
+            default: break;
         }
         if (office) {
             if (bonnie_jumpscare_counter >= 3) {
@@ -206,4 +204,22 @@ void Game_Night::playLiveNight() {
     else {
         std::cout << "You died..." << std::endl;
     }
+}
+
+// Adds animatornics to game, made as method to allow access to private map
+void Game_Night::addAnimatronic(Base_Animatronic &base) {
+    map.addAnimatronic(base);
+}
+
+// Method to find animatronics
+void Game_Night::findAnimatronic(Base_Animatronic &base) {
+    std::cout << "Bonnie is at: " << map.find(base).getName() << std::endl;
+}
+
+bool Game_Night::animatronicAtDoorCheck(Base_Animatronic &base, std::string doorName) {
+    return map.animatronicAtDoor(base, doorName);
+}
+
+bool Game_Night::animatronicInOffice() {
+    return office ? true : false;
 }

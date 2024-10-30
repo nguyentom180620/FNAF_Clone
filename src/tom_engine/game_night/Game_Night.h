@@ -3,6 +3,9 @@
 #include "../../map/Map.h"
 #include "../../animatronics/Bonnie/Bonnie.h"
 
+// Number of seconds in a night (8 mins and 55 seconds)
+constexpr unsigned int GAME_LENGTH = 535;
+
 class Game_Night {
     // Idea: Have a nullptr for the office. If the pointer contains an animatronic, then logic for a jumpscare
     // can occur. Use pointer to easily remove animatronic from door vectors to the pointer.
@@ -17,4 +20,8 @@ public:
     void enterOffice(Base_Animatronic& base);
     void playNight();
     void playLiveNight();
+    void addAnimatronic(Base_Animatronic& base);
+    void findAnimatronic(Base_Animatronic& base);
+    bool animatronicAtDoorCheck(Base_Animatronic& base, std::string doorName);
+    bool animatronicInOffice();
 };
