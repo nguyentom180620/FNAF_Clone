@@ -2,6 +2,7 @@
 #include <random>
 #include "tom_engine/game_night/Game_Night.h"
 #include "graphics/Left_Door.h"
+// Note: snake_case for variable names, camelCase for functions
 
 // random number generator:
 // Reference: https://stackoverflow.com/questions/29549873/stdmt19937-doesnt-return-random-number
@@ -10,6 +11,12 @@ static std::mt19937 rng{rd()};
 
 // font is same as Notepad, consolas 11 font
 constexpr unsigned int FONT_SIZE = 17;
+
+/* TODO: Implement Door and Light Buttons and make them interactable, then connect Bonnie to game and test interaction!
+ * Basically, get the graphic version up to the current playtest function so we can practice seeing Bonnie in ASCII!
+ * Maybe even make a jumpscare animation?
+ * ASCII starting to come in!
+*/
 
 // int main() {
 //     Game_Night night_1(rng);
@@ -24,11 +31,10 @@ int main() {
 
     // Left Door ASCII Text Import
     sf::Font font;
-    font.loadFromFile("src/graphics/font/consolas.ttf");
+    font.loadFromFile("src/graphics/font/CONSOLA.TTF");
 
     sf::Text left_door_text(left_door_open_empty_text, font);
     left_door_text.setCharacterSize(FONT_SIZE);
-    left_door_text.setStyle(sf::Text::Regular);
     left_door_text.setFillColor(sf::Color::White);
 
     // Try drawing left door using render texture
@@ -40,6 +46,9 @@ int main() {
     // Make inital left door sprite
     sf::Sprite left_door_sprite;
     left_door_sprite.setTexture(left_door_render_texture.getTexture());
+
+    // Establish left_door bool
+    bool doorClosed = false;
 
     // Mouse click checking for door
     // Logic from here: https://en.sfml-dev.org/forums/index.php?topic=21666.0
@@ -64,10 +73,17 @@ int main() {
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     if (left_door_sprite.getGlobalBounds().contains(translated_pos)) {
-                        std::cout << "You are clicking the door!" << std::endl;
+                        doorClosed = !doorClosed;
                     }
                 }
             }
+        }
+
+        if (doorClosed) {
+            left_door_text.setString(left_door_closed_text);
+        }
+        else {
+            left_door_text.setString(left_door_open_empty_text);
         }
         left_door_render_texture.clear(sf::Color::Black);
         left_door_render_texture.draw(left_door_text);
