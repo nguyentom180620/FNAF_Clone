@@ -44,7 +44,7 @@ bool Left_Door::clickedOn(sf::Vector2f &mouse_pos) {
 }
 
 // toggle door function, will def reuse for right door
-void Left_Door::toggleDoor(const bool doorClosed) {
+void Left_Door::updateDoor(const bool doorClosed) {
     if (doorClosed) {
         left_door_text.setString(left_door_closed_text);
     }

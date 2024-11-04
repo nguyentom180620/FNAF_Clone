@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 #include "tom_engine/game_night_backend/Game_Night_Backend.h"
-#include "tom_engine/components/sprites/Left_Door.h"
+#include "tom_engine/game/Main_Game_Window/Main_Game_Window.h"
 // Note: snake_case for variable names, camelCase for functions
 
 // random number generator:
@@ -26,49 +26,8 @@ constexpr unsigned int FONT_SIZE = 17;
 // }
 
 int main() {
-    auto window = sf::RenderWindow{ { 1000u, 900u }, "FNAF Clone", sf::Style::Close };
-    window.setFramerateLimit(60);
-
-    Left_Door left_door;
-
-    // Establish left_door bool
-    // TODO: Have this boolean managed by the Main_Game_Window class, having getters and setters for Left_Door to use
-    bool doorClosed = false;
-
-    // Mouse click checking for door
-    // Logic from here: https://en.sfml-dev.org/forums/index.php?topic=21666.0
-    auto mouse_pos = sf::Mouse::getPosition(window);
-    sf::Vector2f translated_pos;
-
-    while (window.isOpen()) {
-        // Mouse pos collection
-        mouse_pos = sf::Mouse::getPosition(window);
-        translated_pos = window.mapPixelToCoords(mouse_pos);
-
-        sf::Event event {};
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Escape) {
-                    window.close();
-                }
-            }
-            if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    if (left_door.clickedOn(translated_pos)) {
-                        doorClosed = !doorClosed;
-                        left_door.toggleDoor(doorClosed);
-                    }
-                }
-            }
-        }
-
-        window.clear();
-        window.draw(left_door.getSprite());
-        window.display();
-    }
+    Main_Game_Window main_game_window{};
+    main_game_window.Run();
 
     // Game_Night night_1(rng);
 
