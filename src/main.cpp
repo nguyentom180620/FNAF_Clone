@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <random>
-#include "tom_engine/game_night/Game_Night.h"
-#include "graphics/Left_Door.h"
+#include "tom_engine/game_night_backend/Game_Night_Backend.h"
+#include "tom_engine/components/sprites/Left_Door.h"
 // Note: snake_case for variable names, camelCase for functions
 
 // random number generator:
@@ -9,7 +9,7 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-// font is same as Notepad, consolas 11 font
+// font is same as Notepad, consolas font
 constexpr unsigned int FONT_SIZE = 17;
 
 /* TODO: Implement Door and Light Buttons and make them interactable, then connect Bonnie to game and test interaction!
@@ -26,28 +26,13 @@ constexpr unsigned int FONT_SIZE = 17;
 // }
 
 int main() {
-    auto window = sf::RenderWindow{ { 1000u, 900u }, "FNAF Clone" };
+    auto window = sf::RenderWindow{ { 1000u, 900u }, "FNAF Clone", sf::Style::Close };
     window.setFramerateLimit(60);
 
-    // Left Door ASCII Text Import
-    sf::Font font;
-    font.loadFromFile("src/graphics/font/CONSOLA.TTF");
-
-    sf::Text left_door_text(left_door_open_empty_text, font);
-    left_door_text.setCharacterSize(FONT_SIZE);
-    left_door_text.setFillColor(sf::Color::White);
-
-    // Try drawing left door using render texture
-    sf::RenderTexture left_door_render_texture;
-    if (!left_door_render_texture.create(100, 325)) {
-        return -1;
-    }
-
-    // Make inital left door sprite
-    sf::Sprite left_door_sprite;
-    left_door_sprite.setTexture(left_door_render_texture.getTexture());
+    Left_Door left_door;
 
     // Establish left_door bool
+    // TODO: Have this boolean managed by the Main_Game_Window class, having getters and setters for Left_Door to use
     bool doorClosed = false;
 
     // Mouse click checking for door
@@ -72,35 +57,24 @@ int main() {
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    if (left_door_sprite.getGlobalBounds().contains(translated_pos)) {
+                    if (left_door.clickedOn(translated_pos)) {
                         doorClosed = !doorClosed;
+                        left_door.toggleDoor(doorClosed);
                     }
                 }
             }
         }
 
-        if (doorClosed) {
-            left_door_text.setString(left_door_closed_text);
-        }
-        else {
-            left_door_text.setString(left_door_open_empty_text);
-        }
-        left_door_render_texture.clear(sf::Color::Black);
-        left_door_render_texture.draw(left_door_text);
-        left_door_render_texture.display();
-
         window.clear();
-        left_door_sprite.setTexture(left_door_render_texture.getTexture());
-        left_door_sprite.setPosition(sf::Vector2f(97.f, 236.f));
-        window.draw(left_door_sprite);
+        window.draw(left_door.getSprite());
         window.display();
     }
 
     // Game_Night night_1(rng);
-    //
-    // // GAME STATE SECTION
-    // // This loads the night before the gameplay window starts
-    // // Idea is to load everything, and then while window is open the game changes as we pass time through frames
+
+    // GAME STATE SECTION
+    // This loads the night before the gameplay window starts
+    // Idea is to load everything, and then while window is open the game changes as we pass time through frames
     // Bonnie bonnie(1);
     // night_1.addAnimatronic(bonnie);
     //
@@ -111,7 +85,7 @@ int main() {
     // bool playerAlive = true;
     // int gameTime = 0;
     // int frameCounter60 = 0;
-    //
+
     // while (window.isOpen()) {
     //     sf::Event event {};
     //     while(window.pollEvent(event)) {
