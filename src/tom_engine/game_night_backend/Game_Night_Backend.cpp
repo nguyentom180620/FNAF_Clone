@@ -1,13 +1,13 @@
 #include "Game_Night_Backend.h"
 
-Game_Night::Game_Night() = default;
+Game_Night_Backend::Game_Night_Backend() = default;
 
-Game_Night::Game_Night(std::mt19937& rng) {
+Game_Night_Backend::Game_Night_Backend(std::mt19937& rng) {
     office = nullptr;
     this->rng = rng;
 }
 
-void Game_Night::moveAnimatronic(Base_Animatronic& base) {
+void Game_Night_Backend::moveAnimatronic(Base_Animatronic& base) {
     // Generate the two cams the animatronic will move between through random numbers
     const std::string& oldCamString = map.find(base).getName();
     const std::vector<std::string>& newCamVector = base.getPath().at(oldCamString);
@@ -20,13 +20,13 @@ void Game_Night::moveAnimatronic(Base_Animatronic& base) {
         map.moveAnimatronic(base, map.accessCam(oldCamString), map.accessCam(newCamString));
     }
     else {
-        std::cout << "Something went wrong in the Game_Night::moveAnimatronic(Base_Animatronic& base) function!"
+        std::cout << "Something went wrong in the Game_Night_Backend::moveAnimatronic(Base_Animatronic& base) function!"
         << std::endl;
     }
 }
 
 // This function should only be called when animatronics are at a door
-void Game_Night::enterOffice(Base_Animatronic &base) {
+void Game_Night_Backend::enterOffice(Base_Animatronic &base) {
     const std::string& door = map.find(base).getName();
     if (map.find(base) == map.accessCam(door)) {
         map.accessCam(door).removeAnimatronic(base);
@@ -34,11 +34,11 @@ void Game_Night::enterOffice(Base_Animatronic &base) {
         std::cout << "Bonnie entered the office!" << std::endl;
     }
     else {
-        std::cout << "Something went wrong in Game_Night::enterOffice (Shouldn't be called right now)" << std::endl;
+        std::cout << "Something went wrong in Game_Night_Backend::enterOffice (Shouldn't be called right now)" << std::endl;
     }
 }
 
-void Game_Night::playNight() {
+void Game_Night_Backend::playNight() {
     Bonnie bonnie(1);
     map.addAnimatronic(bonnie);
 
@@ -122,7 +122,7 @@ void Game_Night::playNight() {
 
 // This version isn't used in game as the window while loop wouldn't work with this function,
 // but it is a model for what is used in the main() function
-void Game_Night::playLiveNight() {
+void Game_Night_Backend::playLiveNight() {
     Bonnie bonnie(1);
     map.addAnimatronic(bonnie);
 
@@ -207,19 +207,19 @@ void Game_Night::playLiveNight() {
 }
 
 // Adds animatornics to game, made as method to allow access to private map
-void Game_Night::addAnimatronic(Base_Animatronic &base) {
+void Game_Night_Backend::addAnimatronic(Base_Animatronic &base) {
     map.addAnimatronic(base);
 }
 
 // Method to find animatronics
-void Game_Night::findAnimatronic(Base_Animatronic &base) {
+void Game_Night_Backend::findAnimatronic(Base_Animatronic &base) {
     std::cout << "Bonnie is at: " << map.find(base).getName() << std::endl;
 }
 
-bool Game_Night::animatronicAtDoorCheck(Base_Animatronic &base, std::string doorName) {
+bool Game_Night_Backend::animatronicAtDoorCheck(Base_Animatronic &base, std::string doorName) {
     return map.animatronicAtDoor(base, doorName);
 }
 
-bool Game_Night::animatronicInOffice() {
+bool Game_Night_Backend::animatronicInOffice() {
     return office ? true : false;
 }
