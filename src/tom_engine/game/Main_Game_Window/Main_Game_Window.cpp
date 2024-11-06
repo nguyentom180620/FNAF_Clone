@@ -16,7 +16,9 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     night_lose = false;
 
     doorClosed = false;
-    left_door_clicked_on = false;
+    lightsOn = false;
+    left_door_open_close_clicked_on = false;
+    left_door_light_clicked_on = false;
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
     game_window.setFramerateLimit(60);
@@ -27,8 +29,8 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
 Main_Game_Window::~Main_Game_Window() {}
 
 void Main_Game_Window::Update() {
-    // Update Left Door
-    if (left_door_clicked_on) {
+    // Update Left Door open close toggle
+    if (left_door_open_close_clicked_on) {
         setdoorClosed(!getdoorClosed());
         if (doorClosed == true) {
             std::cout << "You closed the door!" << std::endl;
@@ -36,8 +38,16 @@ void Main_Game_Window::Update() {
         else {
             std::cout << "You opened the door!" << std::endl;
         }
-        left_door.updateDoor(getdoorClosed());
-        left_door_clicked_on = false;
+        left_door.openCloseDoor(getdoorClosed(), getLightsOn());
+        left_door_open_close_clicked_on = false;
+    }
+    // Update Left Door Light
+    if (left_door_light_clicked_on) {
+        setLightsOn(!getLightsOn());
+        if (doorClosed == false) {
+            left_door.updateLights(getLightsOn());
+        }
+        left_door_light_clicked_on = false;
     }
 
     // Bonnie moviement and timer engine
@@ -87,7 +97,7 @@ void Main_Game_Window::Update() {
                 else {
                     std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
                     setdoorClosed(false);
-                    left_door.updateDoor(getdoorClosed());
+                    left_door.openCloseDoor(getdoorClosed(), getLightsOn());
                 }
             }
             if (entered_office == false) {
@@ -116,6 +126,14 @@ void Main_Game_Window::setdoorClosed(bool newBool) {
     doorClosed = newBool;
 }
 
+const bool Main_Game_Window::getLightsOn() {
+    return lightsOn;
+}
+
+void Main_Game_Window::setLightsOn(bool newBool) {
+    lightsOn = newBool;
+}
+
 void Main_Game_Window::Run() {
     while (game_window.isOpen()) {
         if (night_win == true) {
@@ -141,7 +159,13 @@ void Main_Game_Window::Run() {
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     if (left_door.clickedOn(translated_mouse_pos)) {
-                        left_door_clicked_on = true;
+                        left_door_open_close_clicked_on = true;
+                    }
+                }
+                // Right click on door for light mechanic
+                if (event.mouseButton.button == sf::Mouse::Right) {
+                    if (left_door.clickedOn(translated_mouse_pos)) {
+                        left_door_light_clicked_on = true;
                     }
                 }
             }

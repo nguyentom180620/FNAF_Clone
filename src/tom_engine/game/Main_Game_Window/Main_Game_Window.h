@@ -20,7 +20,9 @@ class Main_Game_Window {
     bool night_lose;
 
     bool doorClosed;
-    bool left_door_clicked_on;
+    bool lightsOn;
+    bool left_door_open_close_clicked_on;
+    bool left_door_light_clicked_on;
     Left_Door left_door;
     sf::RenderWindow game_window {};
     sf::Vector2f translated_mouse_pos;
@@ -32,5 +34,7 @@ public:
     ~Main_Game_Window();
     const bool getdoorClosed();
     void setdoorClosed(bool newBool);
+    const bool getLightsOn();
+    void setLightsOn(bool newBool);
     void Run();
 };

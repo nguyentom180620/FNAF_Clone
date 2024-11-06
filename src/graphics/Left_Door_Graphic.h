@@ -22,16 +22,16 @@ const char* left_door_open_empty_text = R"V0G0N(   _
 
 // Closed Door
 const char* left_door_closed_text = R"V0G0N(   _
-|  =  =  _
+|= =  =  _
+|= = = = =|
+|= = = = =|
+|/ / / / /|
 |= = = = =|
 |= = = = =|
 |= = = = =|
 |= = = = =|
 |= = = = =|
-|= = = = =|
-|= = = = =|
-|= = = = =|
-|= = = = =|
+|/ / / / /|
 |= = = = =|
 |= = = = =|
 |= = =  -
@@ -39,19 +39,19 @@ const char* left_door_closed_text = R"V0G0N(   _
 |-)V0G0N";
 
 // Lights On, Door
-const char* left_door_light_on_text = R"V0G0N(   _
+const char* left_door_lights_on_text = R"V0G0N(   _
 |  +  =  _
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + + + +|
-|+ + +  -
+|+   +   +|
+|  +   +  |
+|+   +   +|
+|  +   +  |
+|+   +   +|
+|  +   +  |
+|+   +   +|
+|  +   +  |
+|+   +   +|
+|  +   +  |
+|+   +   +|
+|  +    -
 |+  -
 |-)V0G0N";

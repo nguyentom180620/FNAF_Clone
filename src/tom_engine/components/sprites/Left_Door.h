@@ -11,5 +11,6 @@ public:
     ~Left_Door();
     sf::Sprite& getSprite();
     bool clickedOn(sf::Vector2f& mouse_pos);
-    void updateDoor(bool doorClosed);
+    void openCloseDoor(bool doorClosed, bool lightsOn);
+    void updateLights(bool lightsOn);
 };
