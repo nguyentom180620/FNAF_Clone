@@ -15,7 +15,7 @@ Left_Door::Left_Door() {
     left_door_text.setFillColor(sf::Color::White);
 
     left_door_render_texture.create(100, 325);
-    left_door_render_texture.clear(sf::Color::Black);
+    left_door_render_texture.clear(sf::Color::Transparent);
     left_door_render_texture.draw(left_door_text);
     left_door_render_texture.display();
 
@@ -26,7 +26,7 @@ Left_Door::Left_Door() {
 // Get Sprite, should change sprite as needed before being drawn to game window
 sf::Sprite& Left_Door::getSprite() {
     // texture is redone depending on bool doorClosed changes
-    left_door_render_texture.clear(sf::Color::Black);
+    left_door_render_texture.clear(sf::Color::Transparent);
     left_door_render_texture.draw(left_door_text);
     left_door_render_texture.display();
     // sprite texture is reset

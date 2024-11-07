@@ -8,9 +8,6 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-// font is same as Notepad, consolas font
-constexpr unsigned int FONT_SIZE = 17;
-
 /* TODO: Graphics connected to Backend! Now, we should add the light mechanic and draw Bonnie at door if he's there
  * Still do the door and light buttons, clicking on door will just be QOL shortcut
  * After that, drawing the rest of the office would be a nice next step

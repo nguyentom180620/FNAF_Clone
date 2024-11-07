@@ -40,12 +40,24 @@ void Main_Game_Window::Update() {
         }
         left_door.openCloseDoor(getdoorClosed(), getLightsOn());
         left_door_open_close_clicked_on = false;
+        // Reset Animatronic Sprite
+        bonnie.resetSprite();
     }
     // Update Left Door Light
     if (left_door_light_clicked_on) {
-        setLightsOn(!getLightsOn());
+        setLightsOn(true);
         if (doorClosed == false) {
-            left_door.updateLights(getLightsOn());
+            // // If Bonnie is at the door,
+            if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
+                bonnie.loadAtLeftDoorSprite();
+                setLightsOn(false);
+                left_door.updateLights(getLightsOn());
+            }
+            else {
+                left_door.updateLights(getLightsOn());
+                // Reset Animatronic Sprites
+                bonnie.resetSprite();
+            }
         }
         left_door_light_clicked_on = false;
     }
@@ -115,6 +127,7 @@ void Main_Game_Window::Update() {
 void Main_Game_Window::Draw() {
     game_window.clear();
     game_window.draw(left_door.getSprite());
+    game_window.draw(bonnie.getSprite());
     game_window.display();
 }
 
@@ -162,11 +175,23 @@ void Main_Game_Window::Run() {
                         left_door_open_close_clicked_on = true;
                     }
                 }
-                // Right click on door for light mechanic
+            }
+            // Right click hold on door for light mechanic
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+                if (left_door.clickedOn(translated_mouse_pos)) {
+                    left_door_light_clicked_on = true;
+                }
+            }
+            // Reference for this idea: https://en.sfml-dev.org/forums/index.php?topic=13412.0
+            if (event.type == sf::Event::MouseButtonReleased) {
+                // If right clicked released for left door light, stop!
                 if (event.mouseButton.button == sf::Mouse::Right) {
-                    if (left_door.clickedOn(translated_mouse_pos)) {
-                        left_door_light_clicked_on = true;
+                    setLightsOn(false);
+                    if (doorClosed == false) {
+                        left_door.updateLights(getLightsOn());
                     }
+                    // Reset Animatronic Sprites
+                    bonnie.resetSprite();
                 }
             }
         }

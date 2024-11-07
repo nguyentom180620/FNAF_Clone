@@ -2,7 +2,7 @@
 // This is the first graphic file, holding all ASCII states of left door as variables
 // All graphics original files can be found in Tom's PC Documents/FNAF_Clone Graphics folder
 
-// Open Door, no animatronics
+// Open Door
 const char* left_door_open_empty_text = R"V0G0N(   _
 |     =  _
 |         |
