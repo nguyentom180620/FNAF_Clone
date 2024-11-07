@@ -8,9 +8,8 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* TODO: Graphics connected to Backend! Now, we should add the light mechanic and draw Bonnie at door if he's there
- * Still do the door and light buttons, clicking on door will just be QOL shortcut
- * After that, drawing the rest of the office would be a nice next step
+/* TODO: Implement the door and light buttons! Clicking on door will just be QOL shortcut
+ * After that, drawing the rest of the office would be a nice next step, make sure to use transparent + sf::RenderNONE
 */
 
 int main() {
