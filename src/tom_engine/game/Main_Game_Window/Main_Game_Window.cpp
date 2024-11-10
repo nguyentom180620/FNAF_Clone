@@ -46,20 +46,32 @@ void Main_Game_Window::Update() {
     // Update Left Door Light
     if (left_door_light_clicked_on) {
         setLightsOn(true);
+        left_door_light_clicked_on = false;
+    }
+
+    // Have Left Door update while lightsOn is true
+    // Not going to lie, set up is pretty shitty with disconnect between clicking and updating lights, but it works!
+    if (lightsOn) {
+        left_door.lightButtonOn();
         if (doorClosed == false) {
             // // If Bonnie is at the door,
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
                 bonnie.loadAtLeftDoorSprite();
-                setLightsOn(false);
-                left_door.updateLights(getLightsOn());
+                left_door.doorLightOff();
             }
             else {
-                left_door.updateLights(getLightsOn());
                 // Reset Animatronic Sprites
                 bonnie.resetSprite();
+                left_door.doorLightOn();
             }
         }
-        left_door_light_clicked_on = false;
+    }
+    else {
+        if (doorClosed == false) {
+            left_door.doorLightOff();
+        }
+        left_door.lightButtonOff();
+        bonnie.resetSprite();
     }
 
     // Bonnie moviement and timer engine
@@ -127,6 +139,10 @@ void Main_Game_Window::Update() {
 void Main_Game_Window::Draw() {
     game_window.clear();
     game_window.draw(left_door.getSprite());
+    game_window.draw(left_door.getDoorButtonSprite());
+    game_window.draw(left_door.getLightButtonSprite());
+    game_window.draw(left_door.getDoorButtonCaption());
+    game_window.draw(left_door.getLightButtonCaption());
     game_window.draw(bonnie.getSprite());
     game_window.display();
 }
@@ -174,6 +190,10 @@ void Main_Game_Window::Run() {
                     if (left_door.clickedOn(translated_mouse_pos)) {
                         left_door_open_close_clicked_on = true;
                     }
+                    // Quick Light Button Toggle instead of hold
+                    if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
+                        lightsOn = !lightsOn;
+                    }
                 }
             }
             // Right click hold on door for light mechanic
@@ -185,13 +205,15 @@ void Main_Game_Window::Run() {
             // Reference for this idea: https://en.sfml-dev.org/forums/index.php?topic=13412.0
             if (event.type == sf::Event::MouseButtonReleased) {
                 // If right clicked released for left door light, stop!
-                if (event.mouseButton.button == sf::Mouse::Right) {
-                    setLightsOn(false);
-                    if (doorClosed == false) {
-                        left_door.updateLights(getLightsOn());
+                if (left_door.clickedOn(translated_mouse_pos)) {
+                    if (event.mouseButton.button == sf::Mouse::Right) {
+                        setLightsOn(false);
+                        if (doorClosed == false) {
+                            left_door.doorLightOff();
+                        }
+                        // Reset Animatronic Sprites
+                        bonnie.resetSprite();
                     }
-                    // Reset Animatronic Sprites
-                    bonnie.resetSprite();
                 }
             }
         }

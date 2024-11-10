@@ -8,7 +8,7 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* TODO: Implement the door and light buttons! Clicking on door will just be QOL shortcut
+/* TODO: Implement battery system
  * After that, drawing the rest of the office would be a nice next step, make sure to use transparent + sf::RenderNONE
 */
 
