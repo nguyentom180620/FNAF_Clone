@@ -5,8 +5,13 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
+    battery_power = 1000;
     move_count = 0;
     bonnie_jumpscare_counter = 0;
+    passive_battery_drain_interval = 1000;
+    battery_power_usage_array = {true, false, false};
+    battery_power_usage_value = std::count(battery_power_usage_array.begin(),
+        battery_power_usage_array.end(), true);
     entered_office = false;
     player_alive = true;
     game_time = 0;
@@ -29,24 +34,33 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
 Main_Game_Window::~Main_Game_Window() {}
 
 void Main_Game_Window::Update() {
-    // Update Left Door open close toggle
-    if (left_door_open_close_clicked_on) {
-        setdoorClosed(!getdoorClosed());
-        if (doorClosed == true) {
-            std::cout << "You closed the door!" << std::endl;
+    // These only work if power is above 0!
+    if (battery_power > 0) {
+        // Update Left Door open close toggle
+        if (left_door_open_close_clicked_on) {
+            setdoorClosed(!getdoorClosed());
+            if (doorClosed == true) {
+                std::cout << "You closed the door!" << std::endl;
+            }
+            else {
+                std::cout << "You opened the door!" << std::endl;
+            }
+            left_door.openCloseDoor(getdoorClosed(), getLightsOn());
+            left_door_open_close_clicked_on = false;
+            // Reset Animatronic Sprite
+            bonnie.resetSprite();
         }
-        else {
-            std::cout << "You opened the door!" << std::endl;
+        // Update Left Door Light
+        if (left_door_light_clicked_on) {
+            setLightsOn(true);
+            left_door_light_clicked_on = false;
         }
-        left_door.openCloseDoor(getdoorClosed(), getLightsOn());
-        left_door_open_close_clicked_on = false;
-        // Reset Animatronic Sprite
-        bonnie.resetSprite();
     }
-    // Update Left Door Light
-    if (left_door_light_clicked_on) {
-        setLightsOn(true);
-        left_door_light_clicked_on = false;
+    else {
+        doorClosed = false;
+        lightsOn = false;
+        left_door.doorLightOff();
+        left_door.lightButtonOff();
     }
 
     // Have Left Door update while lightsOn is true
@@ -74,7 +88,8 @@ void Main_Game_Window::Update() {
         bonnie.resetSprite();
     }
 
-    // Bonnie moviement and timer engine
+    // Timer engine
+    // Manages Bonnie and Battery
     ++frame_counter_60;
     if (frame_counter_60 >= 60) {
         if (game_time >= GAME_LENGTH) {
@@ -130,6 +145,31 @@ void Main_Game_Window::Update() {
             }
             move_count = 0;
         }
+        // Passive Battery Drain and Usage Drain
+        if (game_time % passive_battery_drain_interval == 0) {
+            battery_power = battery_power - 1;
+        }
+        if (doorClosed) {
+            battery_power_usage_array[1] = true;
+        }
+        else {
+            battery_power_usage_array[1] = false;
+        }
+        if (lightsOn) {
+            battery_power_usage_array[2] = true;
+        }
+        else {
+            battery_power_usage_array[2] = false;
+        }
+        battery_power_usage_value = std::count(battery_power_usage_array.begin(),
+            battery_power_usage_array.end(), true);
+        if (battery_power > 0) {
+            battery_power = battery_power - battery_power_usage_value;
+            if (battery_power < 0) {
+                battery_power = 0;
+            }
+        }
+        std::cout << "Battery Value: " << battery_power / 10 << std::endl;
         ++move_count;
         ++game_time;
         frame_counter_60 = 0;

@@ -8,9 +8,13 @@ class Main_Game_Window {
 
     Game_Night_Backend night_1;
     Bonnie bonnie;
+    int battery_power;
 
     int move_count;
     int bonnie_jumpscare_counter;
+    int passive_battery_drain_interval;
+    std::vector<bool> battery_power_usage_array;
+    int battery_power_usage_value;
     bool entered_office;
     bool player_alive;
     int game_time;
