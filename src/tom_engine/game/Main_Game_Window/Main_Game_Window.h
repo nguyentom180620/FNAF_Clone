@@ -8,13 +8,18 @@ class Main_Game_Window {
 
     Game_Night_Backend night_1;
     Bonnie bonnie;
-    int battery_power;
 
     int move_count;
     int bonnie_jumpscare_counter;
+
+    int battery_power;
+    std::string battery_display_value;
     int passive_battery_drain_interval;
     std::vector<bool> battery_power_usage_array;
     int battery_power_usage_value;
+    sf::Font battery_caption_font;
+    sf::Text battery_caption;
+
     bool entered_office;
     bool player_alive;
     int game_time;
@@ -28,6 +33,8 @@ class Main_Game_Window {
     bool left_door_open_close_clicked_on;
     bool left_door_light_clicked_on;
     Left_Door left_door;
+    sf::RectangleShape top_line;
+    sf::RectangleShape bottom_line;
     sf::RenderWindow game_window {};
     sf::Vector2f translated_mouse_pos;
 

@@ -1,14 +1,16 @@
 #include "Main_Game_Window.h"
 #include <iostream>
+#define FONT_SIZE 35
 
 Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
-    battery_power = 1000;
     move_count = 0;
     bonnie_jumpscare_counter = 0;
+    battery_power = 1000;
     passive_battery_drain_interval = 1000;
+    battery_display_value = battery_power / 10;
     battery_power_usage_array = {true, false, false};
     battery_power_usage_value = std::count(battery_power_usage_array.begin(),
         battery_power_usage_array.end(), true);
@@ -24,6 +26,26 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     lightsOn = false;
     left_door_open_close_clicked_on = false;
     left_door_light_clicked_on = false;
+
+    battery_caption_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
+    battery_caption.setFont(battery_caption_font);
+    battery_display_value = std::to_string(battery_power / 10);
+    battery_caption.setString("Battery: " + battery_display_value + '%');
+    battery_caption.setCharacterSize(FONT_SIZE);
+    battery_caption.setFillColor(sf::Color::White);
+    battery_caption.setPosition(sf::Vector2f(20, 25));
+
+    top_line.setFillColor(sf::Color::Transparent);
+    top_line.setOutlineColor(sf::Color::White);
+    top_line.setSize(sf::Vector2f(1000,0));
+    top_line.setPosition(sf::Vector2f(0, 100));
+    top_line.setOutlineThickness(1.0f);
+    bottom_line.setFillColor(sf::Color::Transparent);
+    bottom_line.setOutlineColor(sf::Color::White);
+    bottom_line.setSize(sf::Vector2f(1000,0));
+    bottom_line.setPosition(sf::Vector2f(0, 800));
+    bottom_line.setOutlineThickness(1.0f);
+
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
     game_window.setFramerateLimit(60);
@@ -169,7 +191,9 @@ void Main_Game_Window::Update() {
                 battery_power = 0;
             }
         }
-        std::cout << "Battery Value: " << battery_power / 10 << std::endl;
+        battery_display_value = battery_power / 10;
+        battery_display_value = std::to_string(battery_power / 10);
+        battery_caption.setString("Battery: " + battery_display_value + '%');
         ++move_count;
         ++game_time;
         frame_counter_60 = 0;
@@ -184,6 +208,9 @@ void Main_Game_Window::Draw() {
     game_window.draw(left_door.getDoorButtonCaption());
     game_window.draw(left_door.getLightButtonCaption());
     game_window.draw(bonnie.getSprite());
+    game_window.draw(battery_caption);
+    game_window.draw(top_line);
+    game_window.draw(bottom_line);
     game_window.display();
 }
 
