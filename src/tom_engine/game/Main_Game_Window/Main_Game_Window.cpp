@@ -35,6 +35,26 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     battery_caption.setFillColor(sf::Color::White);
     battery_caption.setPosition(sf::Vector2f(20, 25));
 
+    usage_caption_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
+    usage_caption.setFont(usage_caption_font);
+    usage_caption.setString("Usage:");
+    usage_caption.setCharacterSize(FONT_SIZE);
+    usage_caption.setFillColor(sf::Color::White);
+    usage_caption.setPosition(sf::Vector2f(350, 25));
+
+    usage_bar_texture.create(25, 55);
+    usage_bar_texture.clear(sf::Color::White);
+    usage_bar_texture.display();
+    usage_bar_sprite.setTexture(usage_bar_texture.getTexture());
+    usage_bar_sprite.setPosition(sf::Vector2f(485, 21));
+
+    clock_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
+    clock_text.setFont(clock_font);
+    clock_text.setString("12 AM, Night 1");
+    clock_text.setCharacterSize(FONT_SIZE);
+    clock_text.setFillColor(sf::Color::White);
+    clock_text.setPosition(sf::Vector2f(700, 25));
+
     top_line.setFillColor(sf::Color::Transparent);
     top_line.setOutlineColor(sf::Color::White);
     top_line.setSize(sf::Vector2f(1000,0));
@@ -81,8 +101,10 @@ void Main_Game_Window::Update() {
     else {
         doorClosed = false;
         lightsOn = false;
+        battery_power_usage_array = {false, false, false};
         left_door.doorLightOff();
         left_door.lightButtonOff();
+        left_door.openCloseDoor(doorClosed, lightsOn);
     }
 
     // Have Left Door update while lightsOn is true
@@ -110,6 +132,22 @@ void Main_Game_Window::Update() {
         bonnie.resetSprite();
     }
 
+    // Update array every frame to get faster feedback on usage bar
+    if (doorClosed) {
+        battery_power_usage_array[1] = true;
+    }
+    else {
+        battery_power_usage_array[1] = false;
+    }
+    if (lightsOn) {
+        battery_power_usage_array[2] = true;
+    }
+    else {
+        battery_power_usage_array[2] = false;
+    }
+    battery_power_usage_value = std::count(battery_power_usage_array.begin(),
+        battery_power_usage_array.end(), true);
+
     // Timer engine
     // Manages Bonnie and Battery
     ++frame_counter_60;
@@ -122,21 +160,27 @@ void Main_Game_Window::Update() {
                 std::cout << "12 AM" << std::endl;
             break;
             case 90:
+                clock_text.setString("1 AM, Night 1");
                 std::cout << "1 AM" << std::endl;
             break;
             case 179:
+                clock_text.setString("2 AM, Night 1");
                 std::cout << "2 AM" << std::endl;
             break;
             case 268:
+                clock_text.setString("3 AM, Night 1");
                 std::cout << "3 AM" << std::endl;
             break;
             case 357:
+                clock_text.setString("4 AM, Night 1");
                 std::cout << "4 AM" << std::endl;
             break;
             case 446:
+                clock_text.setString("5 AM, Night 1");
                 std::cout << "5 AM" << std::endl;
             break;
             case GAME_LENGTH:
+                clock_text.setString("6 AM, Night 1");
                 std::cout << "6 AM" << std::endl;
             break;
             default: break;
@@ -171,20 +215,6 @@ void Main_Game_Window::Update() {
         if (game_time % passive_battery_drain_interval == 0) {
             battery_power = battery_power - 1;
         }
-        if (doorClosed) {
-            battery_power_usage_array[1] = true;
-        }
-        else {
-            battery_power_usage_array[1] = false;
-        }
-        if (lightsOn) {
-            battery_power_usage_array[2] = true;
-        }
-        else {
-            battery_power_usage_array[2] = false;
-        }
-        battery_power_usage_value = std::count(battery_power_usage_array.begin(),
-            battery_power_usage_array.end(), true);
         if (battery_power > 0) {
             battery_power = battery_power - battery_power_usage_value;
             if (battery_power < 0) {
@@ -209,6 +239,14 @@ void Main_Game_Window::Draw() {
     game_window.draw(left_door.getLightButtonCaption());
     game_window.draw(bonnie.getSprite());
     game_window.draw(battery_caption);
+    game_window.draw(usage_caption);
+
+    for (int i = 0; i < battery_power_usage_value; i++) {
+        usage_bar_sprite.setPosition(sf::Vector2f(485 + (35*i), 21));
+        game_window.draw(usage_bar_sprite);
+    }
+
+    game_window.draw(clock_text);
     game_window.draw(top_line);
     game_window.draw(bottom_line);
     game_window.display();

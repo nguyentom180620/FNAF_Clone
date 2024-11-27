@@ -20,6 +20,14 @@ class Main_Game_Window {
     sf::Font battery_caption_font;
     sf::Text battery_caption;
 
+    sf::Font usage_caption_font;
+    sf::Text usage_caption;
+    sf::RenderTexture usage_bar_texture;
+    sf::Sprite usage_bar_sprite;
+
+    sf::Font clock_font;
+    sf::Text clock_text;
+
     bool entered_office;
     bool player_alive;
     int game_time;
