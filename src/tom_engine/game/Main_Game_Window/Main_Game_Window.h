@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "../../game_night_backend/Game_Night_Backend.h"
 #include "../../components/sprites/Left_Door.h"
+#include  "../../components/sprites/Open_Cam_Button.h"
 class Main_Game_Window {
     std::mt19937 rng;
 
@@ -44,6 +45,10 @@ class Main_Game_Window {
     bool left_door_open_close_clicked_on;
     bool left_door_light_clicked_on;
     Left_Door left_door;
+
+    bool open_cam_button_clicked_on;
+    Open_Cam_Button open_cam_button;
+
     sf::RectangleShape top_line;
     sf::RectangleShape bottom_line;
     sf::RenderWindow game_window {};

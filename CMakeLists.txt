@@ -27,6 +27,8 @@ add_executable(main src/main.cpp
         src/tom_engine/components/sprites/Left_Door.cpp
         src/tom_engine/game/Main_Game_Window/Main_Game_Window.cpp
         src/graphics/Bonnie_Graphic.h
+        src/tom_engine/components/sprites/Open_Cam_Button.h
+        src/tom_engine/components/sprites/Open_Cam_Button.cpp
 )
 target_link_libraries(main PRIVATE sfml-graphics)
 target_compile_features(main PRIVATE cxx_std_17)

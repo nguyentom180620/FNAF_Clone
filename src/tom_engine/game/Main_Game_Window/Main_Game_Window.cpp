@@ -27,6 +27,8 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     left_door_open_close_clicked_on = false;
     left_door_light_clicked_on = false;
 
+    open_cam_button_clicked_on = false;
+
     battery_caption_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
     battery_caption.setFont(battery_caption_font);
     battery_display_value = std::to_string(battery_power / 10);
@@ -50,7 +52,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
 
     Office_Background_texture.loadFromFile("src/graphics/Fnaf_background_image.png", sf::IntRect({50, 0}, {753, 526}));
     Office_Background_sprite.setTexture(Office_Background_texture);
-    Office_Background_sprite.setPosition(200,150);
+    Office_Background_sprite.setPosition(sf::Vector2f(200,150));
     Office_Background_sprite.setScale(0.94, 0.94);
 
     clock_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
@@ -83,6 +85,12 @@ Main_Game_Window::~Main_Game_Window() {}
 void Main_Game_Window::Update() {
     // These only work if power is above 0!
     if (battery_power > 0) {
+        // Check the new cam button
+        if (open_cam_button_clicked_on) {
+            std::cout << "Cam button clicked on!" << std::endl;
+            open_cam_button_clicked_on = false;
+        }
+
         // Update Left Door open close toggle
         if (left_door_open_close_clicked_on) {
             setdoorClosed(!getdoorClosed());
@@ -256,6 +264,7 @@ void Main_Game_Window::Draw() {
     game_window.draw(clock_text);
     game_window.draw(top_line);
     game_window.draw(bottom_line);
+    game_window.draw(open_cam_button.getSprite());
     game_window.display();
 }
 
@@ -301,6 +310,9 @@ void Main_Game_Window::Run() {
                 if (event.mouseButton.button == sf::Mouse::Left) {
                     if (left_door.clickedOn(translated_mouse_pos)) {
                         left_door_open_close_clicked_on = true;
+                    }
+                    if (open_cam_button.clickedOn(translated_mouse_pos)) {
+                        open_cam_button_clicked_on = true;
                     }
                     // Quick Light Button Toggle instead of hold
                     if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
