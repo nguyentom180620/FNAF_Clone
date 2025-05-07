@@ -1,5 +1,3 @@
-#include <SFML/Graphics.hpp>
-#include <random>
 #include "tom_engine/game/Main_Game_Window/Main_Game_Window.h"
 // Note: snake_case for variable names, camelCase for functions
 
@@ -8,8 +6,8 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* TODO: Draw the Office, making sure to use transparent + sf::RenderNONE
- * After that, cam system and scene manager
+/* Finished interior of office (other than right door, will do when adding chica)
+ * TODO: Now add cam system and scene manager! (Basically add states)
 */
 
 int main() {

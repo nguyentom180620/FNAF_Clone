@@ -25,6 +25,9 @@ class Main_Game_Window {
     sf::RenderTexture usage_bar_texture;
     sf::Sprite usage_bar_sprite;
 
+    sf::Texture Office_Background_texture;
+    sf::Sprite Office_Background_sprite;
+
     sf::Font clock_font;
     sf::Text clock_text;
 

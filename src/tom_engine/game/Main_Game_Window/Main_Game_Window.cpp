@@ -48,6 +48,11 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     usage_bar_sprite.setTexture(usage_bar_texture.getTexture());
     usage_bar_sprite.setPosition(sf::Vector2f(485, 21));
 
+    Office_Background_texture.loadFromFile("src/graphics/Fnaf_background_image.png", sf::IntRect({50, 0}, {753, 526}));
+    Office_Background_sprite.setTexture(Office_Background_texture);
+    Office_Background_sprite.setPosition(200,150);
+    Office_Background_sprite.setScale(0.94, 0.94);
+
     clock_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
     clock_text.setFont(clock_font);
     clock_text.setString("12 AM, Night 1");
@@ -232,20 +237,22 @@ void Main_Game_Window::Update() {
 
 void Main_Game_Window::Draw() {
     game_window.clear();
+    // Depends on Scene
     game_window.draw(left_door.getSprite());
     game_window.draw(left_door.getDoorButtonSprite());
     game_window.draw(left_door.getLightButtonSprite());
     game_window.draw(left_door.getDoorButtonCaption());
     game_window.draw(left_door.getLightButtonCaption());
     game_window.draw(bonnie.getSprite());
+    game_window.draw(Office_Background_sprite);
+
+    // Always on Screen
     game_window.draw(battery_caption);
     game_window.draw(usage_caption);
-
     for (int i = 0; i < battery_power_usage_value; i++) {
         usage_bar_sprite.setPosition(sf::Vector2f(485 + (35*i), 21));
         game_window.draw(usage_bar_sprite);
     }
-
     game_window.draw(clock_text);
     game_window.draw(top_line);
     game_window.draw(bottom_line);
