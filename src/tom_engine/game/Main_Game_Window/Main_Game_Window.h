@@ -47,6 +47,7 @@ class Main_Game_Window {
     Left_Door left_door;
 
     bool open_cam_button_clicked_on;
+    bool cam_mode;
     Open_Cam_Button open_cam_button;
 
     sf::RectangleShape top_line;

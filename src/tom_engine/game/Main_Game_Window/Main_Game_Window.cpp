@@ -11,7 +11,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     battery_power = 1000;
     passive_battery_drain_interval = 1000;
     battery_display_value = battery_power / 10;
-    battery_power_usage_array = {true, false, false};
+    battery_power_usage_array = {true, false, false, false};
     battery_power_usage_value = std::count(battery_power_usage_array.begin(),
         battery_power_usage_array.end(), true);
     entered_office = false;
@@ -28,6 +28,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     left_door_light_clicked_on = false;
 
     open_cam_button_clicked_on = false;
+    cam_mode = false;
 
     battery_caption_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
     battery_caption.setFont(battery_caption_font);
@@ -87,7 +88,8 @@ void Main_Game_Window::Update() {
     if (battery_power > 0) {
         // Check the new cam button
         if (open_cam_button_clicked_on) {
-            std::cout << "Cam button clicked on!" << std::endl;
+            // Toggle cam mode
+            cam_mode = !cam_mode;
             open_cam_button_clicked_on = false;
         }
 
@@ -114,6 +116,7 @@ void Main_Game_Window::Update() {
     else {
         doorClosed = false;
         lightsOn = false;
+        cam_mode = false;
         battery_power_usage_array = {false, false, false};
         left_door.doorLightOff();
         left_door.lightButtonOff();
@@ -157,6 +160,12 @@ void Main_Game_Window::Update() {
     }
     else {
         battery_power_usage_array[2] = false;
+    }
+    if (cam_mode) {
+        battery_power_usage_array[3] = true;
+    }
+    else {
+        battery_power_usage_array[3] = false;
     }
     battery_power_usage_value = std::count(battery_power_usage_array.begin(),
         battery_power_usage_array.end(), true);
@@ -246,13 +255,18 @@ void Main_Game_Window::Update() {
 void Main_Game_Window::Draw() {
     game_window.clear();
     // Depends on Scene
-    game_window.draw(left_door.getSprite());
-    game_window.draw(left_door.getDoorButtonSprite());
-    game_window.draw(left_door.getLightButtonSprite());
-    game_window.draw(left_door.getDoorButtonCaption());
-    game_window.draw(left_door.getLightButtonCaption());
-    game_window.draw(bonnie.getSprite());
-    game_window.draw(Office_Background_sprite);
+    if (cam_mode == true) {
+        // For drawing cam map and current cam scene
+    }
+    if (cam_mode == false) {
+        game_window.draw(left_door.getSprite());
+        game_window.draw(left_door.getDoorButtonSprite());
+        game_window.draw(left_door.getLightButtonSprite());
+        game_window.draw(left_door.getDoorButtonCaption());
+        game_window.draw(left_door.getLightButtonCaption());
+        game_window.draw(bonnie.getSprite());
+        game_window.draw(Office_Background_sprite);
+    }
 
     // Always on Screen
     game_window.draw(battery_caption);
@@ -308,35 +322,56 @@ void Main_Game_Window::Run() {
             }
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    if (left_door.clickedOn(translated_mouse_pos)) {
-                        left_door_open_close_clicked_on = true;
+                    // In camera
+                    if (cam_mode == true) {
+                        if (open_cam_button.clickedOn(translated_mouse_pos)) {
+                            open_cam_button_clicked_on = true;
+                        }
                     }
-                    if (open_cam_button.clickedOn(translated_mouse_pos)) {
-                        open_cam_button_clicked_on = true;
-                    }
-                    // Quick Light Button Toggle instead of hold
-                    if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
-                        lightsOn = !lightsOn;
+                    // In office
+                    if (cam_mode == false) {
+                        if (left_door.clickedOn(translated_mouse_pos)) {
+                            left_door_open_close_clicked_on = true;
+                        }
+                        if (open_cam_button.clickedOn(translated_mouse_pos)) {
+                            open_cam_button_clicked_on = true;
+                        }
+                        // Quick Light Button Toggle instead of hold
+                        if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
+                            lightsOn = !lightsOn;
+                        }
                     }
                 }
             }
             // Right click hold on door for light mechanic
             if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-                if (left_door.clickedOn(translated_mouse_pos)) {
-                    left_door_light_clicked_on = true;
+                // In camera
+                if (cam_mode == true) {
+                    // For right-clicking stuff in cam mode
+                }
+                if (cam_mode == false) {
+                    if (left_door.clickedOn(translated_mouse_pos)) {
+                        left_door_light_clicked_on = true;
+                    }
                 }
             }
-            // Reference for this idea: https://en.sfml-dev.org/forums/index.php?topic=13412.0
             if (event.type == sf::Event::MouseButtonReleased) {
-                // If right clicked released for left door light, stop!
-                if (left_door.clickedOn(translated_mouse_pos)) {
-                    if (event.mouseButton.button == sf::Mouse::Right) {
-                        setLightsOn(false);
-                        if (doorClosed == false) {
-                            left_door.doorLightOff();
+                // In camera
+                if (cam_mode == true) {
+                    // future use
+                }
+                if (cam_mode == false) {
+                    // Reference for this idea: https://en.sfml-dev.org/forums/index.php?topic=13412.0
+                    // If right-click released for left door light, stop!
+                    if (left_door.clickedOn(translated_mouse_pos)) {
+                        if (event.mouseButton.button == sf::Mouse::Right) {
+                            setLightsOn(false);
+                            if (doorClosed == false) {
+                                left_door.doorLightOff();
+                            }
+                            // Reset Animatronic Sprites
+                            bonnie.resetSprite();
                         }
-                        // Reset Animatronic Sprites
-                        bonnie.resetSprite();
                     }
                 }
             }
