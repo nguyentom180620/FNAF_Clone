@@ -2,6 +2,7 @@
 #include <random>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "../../../map/Map.h"
 #include "../../game_night_backend/Game_Night_Backend.h"
 #include "../../components/sprites/Left_Door.h"
 #include  "../../components/sprites/Open_Cam_Button.h"
@@ -34,6 +35,7 @@ class Main_Game_Window {
     sf::Texture map_layout_texture;
     sf::Sprite map_layout_sprite;
 
+    std::string active_cam;
     Camera_System camera_system;
 
     sf::Font clock_font;

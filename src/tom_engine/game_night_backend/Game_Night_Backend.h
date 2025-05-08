@@ -16,6 +16,7 @@ class Game_Night_Backend {
 public:
     Game_Night_Backend();
     Game_Night_Backend(std::mt19937& rng);
+    Map& getMap();
     void moveAnimatronic(Base_Animatronic& base);
     void enterOffice(Base_Animatronic& base);
     void playNight();

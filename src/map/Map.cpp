@@ -10,6 +10,7 @@ Map::Cam::Cam() {
 
 Map::Cam::Cam(std::string n) {
     name = n;
+
     for (int i = 0; i < NUM_OF_ANIMATRONICS; i++) {
         animatronics.push_back(nullptr);
     }

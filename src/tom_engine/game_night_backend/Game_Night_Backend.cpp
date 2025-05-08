@@ -7,6 +7,11 @@ Game_Night_Backend::Game_Night_Backend(std::mt19937& rng) {
     this->rng = rng;
 }
 
+Map &Game_Night_Backend::getMap() {
+    return map;
+}
+
+
 void Game_Night_Backend::moveAnimatronic(Base_Animatronic& base) {
     // Generate the two cams the animatronic will move between through random numbers
     const std::string& oldCamString = map.find(base).getName();

@@ -3,9 +3,11 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
+#include <SFML/Graphics.hpp>
 #include "../animatronics/Base_Animatronic/Base_Animatronic.h"
 
 class Map {
+public:
     class Cam {
         std::string name;
         std::vector<Base_Animatronic*> animatronics;
@@ -20,6 +22,7 @@ class Map {
         const std::vector<std::string> getAnimatronicNames() const;
         bool operator==(Cam const& rhsCam) const;
     };
+private:
     std::unordered_map<std::string, Cam> cams{};
     // private methods
     bool isCam(const std::string& cam);

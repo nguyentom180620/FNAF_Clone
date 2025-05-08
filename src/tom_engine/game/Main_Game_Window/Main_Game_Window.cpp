@@ -60,6 +60,8 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     map_layout_sprite.setTexture(map_layout_texture);
     map_layout_sprite.setPosition(sf::Vector2f(500, 200));
 
+    active_cam = "Cam 1A";
+
     clock_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
     clock_text.setFont(clock_font);
     clock_text.setString("12 AM, Night 1");
@@ -261,8 +263,45 @@ void Main_Game_Window::Draw() {
     if (cam_mode == true) {
         // For drawing cam map and current cam scene
         game_window.draw(map_layout_sprite);
-        // auto cameras = camera_system.getCameras();
-            game_window.draw(camera_system.getCameras()[0].getCameraSprite());
+        auto cameras = camera_system.getCameras();
+        for (auto &cam : cameras) {
+            game_window.draw(cam.getCameraSprite());
+        }
+
+        // Vertical Dividing Line
+        sf::RectangleShape vertical_line;
+        vertical_line.setFillColor(sf::Color::White);
+        vertical_line.setOutlineColor(sf::Color::White);
+        vertical_line.setSize(sf::Vector2f(0,700));
+        vertical_line.setPosition(sf::Vector2f(500, 100));
+        vertical_line.setOutlineThickness(1.f);
+        game_window.draw(vertical_line);
+
+        // Get current cam scene
+        sf::Texture cam_texture;
+        sf::Sprite cam_sprite;
+        std::string name_for_file = active_cam.substr(0,3) + "_" + active_cam.substr(4);
+        std::string camDisplay_file_location = "src/graphics/" + name_for_file + ".png";
+        cam_texture.loadFromFile(camDisplay_file_location);
+        cam_sprite.setTexture(cam_texture);
+        cam_sprite.setPosition(sf::Vector2f(0, 100));
+        cam_sprite.setScale(sf::Vector2f(1, 1));
+        game_window.draw(cam_sprite);
+
+        // Cam Name bottom left
+        sf::Font cam_name_font;
+        sf::Text cam_name_text;
+        cam_name_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
+        cam_name_text.setFont(cam_name_font);
+        cam_name_text.setString(active_cam);
+        cam_name_text.setCharacterSize(FONT_SIZE);
+        cam_name_text.setFillColor(sf::Color::White);
+        cam_name_text.setPosition(sf::Vector2f(10, 750));
+        game_window.draw(cam_name_text);
+
+        // This part draws the animatronics onto the scene
+        const std::string current_cam_name = active_cam;
+        Map::Cam current_camera = night_1.getMap().accessCam(current_cam_name);
     }
     if (cam_mode == false) {
         game_window.draw(left_door.getSprite());
@@ -332,6 +371,13 @@ void Main_Game_Window::Run() {
                     if (cam_mode == true) {
                         if (open_cam_button.clickedOn(translated_mouse_pos)) {
                             open_cam_button_clicked_on = true;
+                        }
+                        // Change camera here
+                        std::vector<Camera>& cams = camera_system.getCameras();
+                        for (auto& cam : cams) {
+                            if (cam.clickedOn(translated_mouse_pos)) {
+                                active_cam = cam.getCameraName().getString();
+                            }
                         }
                     }
                     // In office
