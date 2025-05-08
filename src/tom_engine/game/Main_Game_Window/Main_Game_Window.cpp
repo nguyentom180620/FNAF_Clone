@@ -302,6 +302,42 @@ void Main_Game_Window::Draw() {
         // This part draws the animatronics onto the scene
         const std::string current_cam_name = active_cam;
         Map::Cam current_camera = night_1.getMap().accessCam(current_cam_name);
+        std::vector<std::string> animatronic_names = current_camera.getAnimatronicNames();
+
+            // Print Bonnie on screen if Bonnie is on current cam
+        if (std::find(animatronic_names.begin(), animatronic_names.end(), "Bonnie")
+            != animatronic_names.end()) {
+            sf::Texture bonnie_texture;
+            sf::Sprite bonnie_sprite;
+            bonnie_texture.loadFromFile("src/graphics/Bonnie_On_Cam.png");
+            bonnie_sprite.setTexture(bonnie_texture);
+            if (current_cam_name == "Cam 1A") {
+                bonnie_sprite.setPosition(sf::Vector2f(0, 200));
+                bonnie_sprite.setScale(sf::Vector2f(1, 1));
+            }
+            else if (current_cam_name == "Cam 1B") {
+                bonnie_sprite.setPosition(sf::Vector2f(100, 400));
+                bonnie_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else if (current_cam_name == "Cam 2A") {
+                bonnie_sprite.setPosition(sf::Vector2f(200, 200));
+                bonnie_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else if (current_cam_name == "Cam 2B") {
+                bonnie_sprite.setPosition(sf::Vector2f(150, 400));
+                bonnie_sprite.setScale(sf::Vector2f(0.7, 0.7));
+            }
+            else if (current_cam_name == "Cam 3") {
+                bonnie_sprite.setPosition(sf::Vector2f(115, 225));
+                bonnie_sprite.setScale(sf::Vector2f(1, 1));
+            }
+            else if (current_cam_name == "Cam 5") {
+                bonnie_sprite.setPosition(sf::Vector2f(150, 400));
+                bonnie_sprite.setScale(sf::Vector2f(0.7, 0.7));
+            }
+            game_window.draw(bonnie_sprite);
+        }
+
     }
     if (cam_mode == false) {
         game_window.draw(left_door.getSprite());
