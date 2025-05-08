@@ -1,9 +1,11 @@
 #pragma once
 #include <random>
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "../../game_night_backend/Game_Night_Backend.h"
 #include "../../components/sprites/Left_Door.h"
 #include  "../../components/sprites/Open_Cam_Button.h"
+#include "../../components/sprites/Camera_System.h"
 class Main_Game_Window {
     std::mt19937 rng;
 
@@ -28,6 +30,11 @@ class Main_Game_Window {
 
     sf::Texture Office_Background_texture;
     sf::Sprite Office_Background_sprite;
+
+    sf::Texture map_layout_texture;
+    sf::Sprite map_layout_sprite;
+
+    Camera_System camera_system;
 
     sf::Font clock_font;
     sf::Text clock_text;

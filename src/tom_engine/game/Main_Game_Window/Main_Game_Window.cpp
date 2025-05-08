@@ -56,6 +56,10 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     Office_Background_sprite.setPosition(sf::Vector2f(200,150));
     Office_Background_sprite.setScale(0.94, 0.94);
 
+    map_layout_texture.loadFromFile("src/graphics/fnascii_map.png");
+    map_layout_sprite.setTexture(map_layout_texture);
+    map_layout_sprite.setPosition(sf::Vector2f(500, 200));
+
     clock_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
     clock_text.setFont(clock_font);
     clock_text.setString("12 AM, Night 1");
@@ -124,7 +128,6 @@ void Main_Game_Window::Update() {
     }
 
     // Have Left Door update while lightsOn is true
-    // Not going to lie, set up is pretty shitty with disconnect between clicking and updating lights, but it works!
     if (lightsOn) {
         left_door.lightButtonOn();
         if (doorClosed == false) {
@@ -257,6 +260,9 @@ void Main_Game_Window::Draw() {
     // Depends on Scene
     if (cam_mode == true) {
         // For drawing cam map and current cam scene
+        game_window.draw(map_layout_sprite);
+        // auto cameras = camera_system.getCameras();
+            game_window.draw(camera_system.getCameras()[0].getCameraSprite());
     }
     if (cam_mode == false) {
         game_window.draw(left_door.getSprite());
