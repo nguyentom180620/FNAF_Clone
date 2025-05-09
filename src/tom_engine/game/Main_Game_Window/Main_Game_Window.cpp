@@ -16,6 +16,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
         battery_power_usage_array.end(), true);
     entered_office = false;
     player_alive = true;
+    bonnie_jumpscare = false;
     game_time = 0;
     frame_counter_60 = 0;
 
@@ -217,6 +218,7 @@ void Main_Game_Window::Update() {
                 std::cout << "Bonnie Jumpscare!" << std::endl;
                 player_alive = false;
                 night_lose = true;
+                bonnie_jumpscare = true;
             }
             bonnie_jumpscare_counter++;
         }
@@ -385,6 +387,27 @@ void Main_Game_Window::Run() {
             game_window.close();
         }
         if (night_lose == true) {
+            if (bonnie_jumpscare) {
+                sf::Texture bonnie_texture;
+                sf::Sprite bonnie_sprite;
+                bonnie_sprite.setPosition(125, 75);
+
+                // Loop frames
+                for (int i = 0; i < 5; i++) {
+                    game_window.clear();
+                    bonnie_texture.loadFromFile("src/graphics/Bonnie_Jumpscare_Frame1.png");
+                    bonnie_sprite.setTexture(bonnie_texture);
+                    game_window.draw(bonnie_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                    game_window.clear();
+                    bonnie_texture.loadFromFile("src/graphics/Bonnie_Jumpscare_Frame2.png");
+                    bonnie_sprite.setTexture(bonnie_texture);
+                    game_window.draw(bonnie_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                }
+            }
             game_window.close();
         }
         //     // Mouse pos collection
@@ -467,6 +490,7 @@ void Main_Game_Window::Run() {
         Update();
         Draw();
     }
+    sf::sleep(sf::seconds(2.0f));
     // // print section to test changes to the game state variables
     std::cout << std::endl;
     std::cout << "Move Counter: " << move_count << std::endl;

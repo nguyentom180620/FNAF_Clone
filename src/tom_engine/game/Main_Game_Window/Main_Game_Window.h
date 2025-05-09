@@ -43,6 +43,7 @@ class Main_Game_Window {
 
     bool entered_office;
     bool player_alive;
+    bool bonnie_jumpscare;
     int game_time;
     int frame_counter_60;
 

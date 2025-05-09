@@ -6,8 +6,8 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Finished interior of office (other than right door, will do when adding chica)
- * TODO: Now add cam system and scene manager! (Basically add states)
+/* Bonnie Jumpscare added!
+ * Next is adding Chica
 */
 
 int main() {
