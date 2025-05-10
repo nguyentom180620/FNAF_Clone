@@ -81,6 +81,15 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     bottom_line.setPosition(sf::Vector2f(0, 800));
     bottom_line.setOutlineThickness(1.0f);
 
+    freddy_nose.create(22, 20);
+    freddy_nose.clear(sf::Color::Transparent);
+    freddy_nose.display();
+    freddy_noseSprite.setTexture(freddy_nose.getTexture());
+    freddy_noseSprite.setPosition(sf::Vector2f(475, 300));
+
+    freddy_sound_buffer.loadFromFile("src/sound/fnaf_nose_honk.wav");
+    jumpscare_sound_buffer.loadFromFile("src/sound/jumpscare.wav");
+
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
     game_window.setFramerateLimit(60);
@@ -349,6 +358,7 @@ void Main_Game_Window::Draw() {
         game_window.draw(left_door.getLightButtonCaption());
         game_window.draw(bonnie.getSprite());
         game_window.draw(Office_Background_sprite);
+        game_window.draw(freddy_noseSprite);
     }
 
     // Always on Screen
@@ -391,6 +401,9 @@ void Main_Game_Window::Run() {
                 sf::Texture bonnie_texture;
                 sf::Sprite bonnie_sprite;
                 bonnie_sprite.setPosition(125, 75);
+
+                sound_effect.setBuffer(jumpscare_sound_buffer);
+                sound_effect.play();
 
                 // Loop frames
                 for (int i = 0; i < 5; i++) {
@@ -450,6 +463,12 @@ void Main_Game_Window::Run() {
                         // Quick Light Button Toggle instead of hold
                         if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
                             lightsOn = !lightsOn;
+                        }
+                        // If Freddy Picture Nose Booped
+                        if (freddy_noseSprite.getGlobalBounds().contains(translated_mouse_pos)) {
+                            // Play sound
+                            sound_effect.setBuffer(freddy_sound_buffer);
+                            sound_effect.play();
                         }
                     }
                 }

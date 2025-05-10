@@ -1,6 +1,7 @@
 #pragma once
 #include <random>
 #include <vector>
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "../../../map/Map.h"
 #include "../../game_night_backend/Game_Night_Backend.h"
@@ -64,6 +65,14 @@ class Main_Game_Window {
     sf::RectangleShape bottom_line;
     sf::RenderWindow game_window {};
     sf::Vector2f translated_mouse_pos;
+
+    sf::RenderTexture freddy_nose;
+    sf::Sprite freddy_noseSprite;
+    sf::SoundBuffer freddy_sound_buffer;
+
+    sf::SoundBuffer jumpscare_sound_buffer;
+
+    sf::Sound sound_effect;
 
     void Update();
     void Draw();
