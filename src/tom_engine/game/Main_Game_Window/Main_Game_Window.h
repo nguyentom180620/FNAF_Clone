@@ -69,10 +69,37 @@ class Main_Game_Window {
     sf::RenderTexture freddy_nose;
     sf::Sprite freddy_noseSprite;
     sf::SoundBuffer freddy_sound_buffer;
-
     sf::SoundBuffer jumpscare_sound_buffer;
-
     sf::Sound sound_effect;
+
+    sf::SoundBuffer open_door_sound_buffer;
+    sf::SoundBuffer close_door_sound_buffer;
+    sf::Sound open_door_sound;
+    sf::Sound close_door_sound;
+
+    sf::SoundBuffer open_cam_sound_buffer;
+    sf::SoundBuffer close_cam_sound_buffer;
+    sf::Sound open_cam_sound;
+    sf::Sound close_cam_sound;
+
+    sf::SoundBuffer change_cam_sound_buffer;
+    sf::Sound change_cam_sound;
+
+    sf::SoundBuffer lights_on_sound_buffer;
+    sf::SoundBuffer lights_off_sound_buffer;
+    sf::Sound lights_on_sound;
+    sf::Sound lights_off_sound;
+
+    sf::SoundBuffer animatronic_at_door_sound_buffer;
+    sf::Sound animatronic_at_door_sound;
+    bool animatronic_sound_playing;
+
+    sf::SoundBuffer power_zero_buffer;
+    sf::Sound power_zero_sound;
+    bool power_zero_playing;
+
+    sf::SoundBuffer win_6_am_buffer;
+    sf::Sound win_6_am_sound;
 
     void Update();
     void Draw();

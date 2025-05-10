@@ -89,6 +89,18 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
 
     freddy_sound_buffer.loadFromFile("src/sound/fnaf_nose_honk.wav");
     jumpscare_sound_buffer.loadFromFile("src/sound/jumpscare.wav");
+    open_door_sound_buffer.loadFromFile("src/sound/Open_Door.wav");
+    close_door_sound_buffer.loadFromFile("src/sound/Close_Door.wav");
+    open_cam_sound_buffer.loadFromFile("src/sound/Open_Cam.wav");
+    close_cam_sound_buffer.loadFromFile("src/sound/Close_Cam.wav");
+    change_cam_sound_buffer.loadFromFile("src/sound/Change_Cam.wav");
+    lights_on_sound_buffer.loadFromFile("src/sound/Light_On.wav");
+    lights_off_sound_buffer.loadFromFile("src/sound/Light_Off.wav");
+    animatronic_at_door_sound_buffer.loadFromFile("src/sound/Ani_At_door.wav");
+    animatronic_sound_playing = false;
+    power_zero_buffer.loadFromFile("src/sound/power_zero.wav");
+    power_zero_playing = false;
+    win_6_am_buffer.loadFromFile("src/sound/Win_6_AM.wav");
 
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
@@ -106,6 +118,15 @@ void Main_Game_Window::Update() {
         if (open_cam_button_clicked_on) {
             // Toggle cam mode
             cam_mode = !cam_mode;
+            // Play sound corresponding to new state
+            if (cam_mode == false) {
+                close_cam_sound.setBuffer(close_cam_sound_buffer);
+                close_cam_sound.play();
+            }
+            else {
+                open_cam_sound.setBuffer(open_cam_sound_buffer);
+                open_cam_sound.play();
+            }
             open_cam_button_clicked_on = false;
         }
 
@@ -113,9 +134,13 @@ void Main_Game_Window::Update() {
         if (left_door_open_close_clicked_on) {
             setdoorClosed(!getdoorClosed());
             if (doorClosed == true) {
+                close_door_sound.setBuffer(close_door_sound_buffer);
+                close_door_sound.play();
                 std::cout << "You closed the door!" << std::endl;
             }
             else {
+                open_door_sound.setBuffer(open_door_sound_buffer);
+                open_door_sound.play();
                 std::cout << "You opened the door!" << std::endl;
             }
             left_door.openCloseDoor(getdoorClosed(), getLightsOn());
@@ -137,6 +162,15 @@ void Main_Game_Window::Update() {
         left_door.doorLightOff();
         left_door.lightButtonOff();
         left_door.openCloseDoor(doorClosed, lightsOn);
+
+        lights_on_sound.stop();
+        lights_off_sound.stop();
+
+        if (power_zero_playing == false) {
+            power_zero_playing = true;
+            power_zero_sound.setBuffer(power_zero_buffer);
+            power_zero_sound.play();
+        }
     }
 
     // Have Left Door update while lightsOn is true
@@ -145,11 +179,17 @@ void Main_Game_Window::Update() {
         if (doorClosed == false) {
             // // If Bonnie is at the door,
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
+                if (cam_mode == false && animatronic_sound_playing == false) {
+                    animatronic_sound_playing = true;
+                    animatronic_at_door_sound.setBuffer(animatronic_at_door_sound_buffer);
+                    animatronic_at_door_sound.play();
+                }
                 bonnie.loadAtLeftDoorSprite();
                 left_door.doorLightOff();
             }
             else {
                 // Reset Animatronic Sprites
+                animatronic_sound_playing = false;
                 bonnie.resetSprite();
                 left_door.doorLightOn();
             }
@@ -315,7 +355,7 @@ void Main_Game_Window::Draw() {
         Map::Cam current_camera = night_1.getMap().accessCam(current_cam_name);
         std::vector<std::string> animatronic_names = current_camera.getAnimatronicNames();
 
-            // Print Bonnie on screen if Bonnie is on current cam
+        // Print Bonnie on screen if Bonnie is on current cam
         if (std::find(animatronic_names.begin(), animatronic_names.end(), "Bonnie")
             != animatronic_names.end()) {
             sf::Texture bonnie_texture;
@@ -389,11 +429,24 @@ const bool Main_Game_Window::getLightsOn() {
 
 void Main_Game_Window::setLightsOn(bool newBool) {
     lightsOn = newBool;
+    if (lightsOn == true) {
+        lights_on_sound.setBuffer(lights_on_sound_buffer);
+        lights_on_sound.play();
+    }
+    else {
+        lights_off_sound.setBuffer(lights_off_sound_buffer);
+        lights_off_sound.play();
+    }
 }
 
 void Main_Game_Window::Run() {
     while (game_window.isOpen()) {
         if (night_win == true) {
+            game_window.clear();
+            game_window.display();
+            win_6_am_sound.setBuffer(win_6_am_buffer);
+            win_6_am_sound.play();
+            sf::sleep(sf::seconds(10));
             game_window.close();
         }
         if (night_lose == true) {
@@ -448,6 +501,8 @@ void Main_Game_Window::Run() {
                         std::vector<Camera>& cams = camera_system.getCameras();
                         for (auto& cam : cams) {
                             if (cam.clickedOn(translated_mouse_pos)) {
+                                change_cam_sound.setBuffer(change_cam_sound_buffer);
+                                change_cam_sound.play();
                                 active_cam = cam.getCameraName().getString();
                             }
                         }
@@ -463,6 +518,14 @@ void Main_Game_Window::Run() {
                         // Quick Light Button Toggle instead of hold
                         if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
                             lightsOn = !lightsOn;
+                            if (lightsOn == true) {
+                                lights_on_sound.setBuffer(lights_on_sound_buffer);
+                                lights_on_sound.play();
+                            }
+                            else {
+                                lights_off_sound.setBuffer(lights_off_sound_buffer);
+                                lights_off_sound.play();
+                            }
                         }
                         // If Freddy Picture Nose Booped
                         if (freddy_noseSprite.getGlobalBounds().contains(translated_mouse_pos)) {
