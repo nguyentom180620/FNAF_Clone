@@ -101,6 +101,13 @@ class Main_Game_Window {
     sf::SoundBuffer win_6_am_buffer;
     sf::Sound win_6_am_sound;
 
+    sf::SoundBuffer leaving_door_sound_buffer;
+    sf::Sound leaving_door_sound;
+
+    sf::SoundBuffer foxy_bgm_sound_buffer;
+    sf::Sound foxy_bgm_sound;
+    bool foxy_bgm_sound_playing;
+
     void Update();
     void Draw();
 public:

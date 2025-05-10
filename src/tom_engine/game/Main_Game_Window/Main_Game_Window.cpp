@@ -101,6 +101,12 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     power_zero_buffer.loadFromFile("src/sound/power_zero.wav");
     power_zero_playing = false;
     win_6_am_buffer.loadFromFile("src/sound/Win_6_AM.wav");
+    leaving_door_sound_buffer.loadFromFile("src/sound/Leaving_Door.wav");
+    foxy_bgm_sound_buffer.loadFromFile("src/sound/foxy_bgm.wav");
+    foxy_bgm_sound.setBuffer(foxy_bgm_sound_buffer);
+    foxy_bgm_sound.setLoop(true);
+    foxy_bgm_sound.setVolume(75.f);
+    foxy_bgm_sound_playing = false;
 
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
@@ -225,6 +231,18 @@ void Main_Game_Window::Update() {
     battery_power_usage_value = std::count(battery_power_usage_array.begin(),
         battery_power_usage_array.end(), true);
 
+    // Music Management
+    if (cam_mode == true && active_cam == "Cam 1C") {
+        if (foxy_bgm_sound_playing == false) {
+            foxy_bgm_sound.play();
+            foxy_bgm_sound_playing = true;
+        }
+    }
+    else {
+        foxy_bgm_sound.pause();
+        foxy_bgm_sound_playing = false;
+    }
+
     // Timer engine
     // Manages Bonnie and Battery
     ++frame_counter_60;
@@ -278,13 +296,19 @@ void Main_Game_Window::Update() {
                     entered_office = true;
                 }
                 else {
+                    leaving_door_sound.setBuffer(leaving_door_sound_buffer);
+                    leaving_door_sound.play();
                     std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
                     setdoorClosed(false);
                     left_door.openCloseDoor(getdoorClosed(), getLightsOn());
                 }
             }
             if (entered_office == false) {
-                night_1.moveAnimatronic(bonnie);
+                std::uniform_int_distribution<int> uid(1,20);
+                int random_move_value = uid(rng);
+                if (bonnie.getLevel() >= random_move_value) {
+                    night_1.moveAnimatronic(bonnie);
+                }
                 night_1.findAnimatronic(bonnie);
             }
             move_count = 0;
@@ -572,7 +596,6 @@ void Main_Game_Window::Run() {
         Update();
         Draw();
     }
-    sf::sleep(sf::seconds(2.0f));
     // // print section to test changes to the game state variables
     std::cout << std::endl;
     std::cout << "Move Counter: " << move_count << std::endl;
