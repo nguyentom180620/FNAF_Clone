@@ -13,9 +13,11 @@ class Main_Game_Window {
 
     Game_Night_Backend night_1;
     Bonnie bonnie;
+    Foxy foxy;
 
     int move_count;
     int bonnie_jumpscare_counter;
+    int foxy_jumpscare_counter;
 
     int battery_power;
     std::string battery_display_value;
@@ -45,6 +47,8 @@ class Main_Game_Window {
     bool entered_office;
     bool player_alive;
     bool bonnie_jumpscare;
+    bool foxy_jumpscare;
+    bool foxy_running;
     int game_time;
     int frame_counter_60;
 
@@ -89,6 +93,8 @@ class Main_Game_Window {
     sf::SoundBuffer lights_off_sound_buffer;
     sf::Sound lights_on_sound;
     sf::Sound lights_off_sound;
+    bool lights_on_sound_playing;
+    bool lights_off_sound_playing;
 
     sf::SoundBuffer animatronic_at_door_sound_buffer;
     sf::Sound animatronic_at_door_sound;
@@ -107,6 +113,10 @@ class Main_Game_Window {
     sf::SoundBuffer foxy_bgm_sound_buffer;
     sf::Sound foxy_bgm_sound;
     bool foxy_bgm_sound_playing;
+
+    sf::SoundBuffer foxy_running_sound_buffer;
+    sf::Sound foxy_running_sound;
+    bool foxy_running_sound_playing;
 
     void Update();
     void Draw();

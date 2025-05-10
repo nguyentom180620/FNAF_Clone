@@ -33,6 +33,8 @@ add_executable(main src/main.cpp
         src/tom_engine/components/sprites/Camera.h
         src/tom_engine/components/sprites/Camera_System.cpp
         src/tom_engine/components/sprites/Camera_System.h
+        src/animatronics/Foxy/Foxy.cpp
+        src/animatronics/Foxy/Foxy.h
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio)
 target_compile_features(main PRIVATE cxx_std_17)

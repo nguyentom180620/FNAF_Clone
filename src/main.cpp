@@ -6,8 +6,8 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Most sounds added!
- * Now add Chica
+/* Foxy added! Lastly gotta change stage based on foxy stage
+ * Then add Chica
 */
 
 int main() {

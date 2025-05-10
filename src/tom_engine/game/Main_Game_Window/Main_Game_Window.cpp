@@ -2,12 +2,15 @@
 #include <iostream>
 #define FONT_SIZE 35
 
-Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
+Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1), foxy(20) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
+    night_1.addFoxy(foxy);
     move_count = 0;
     bonnie_jumpscare_counter = 0;
+    foxy_jumpscare_counter = 0;
+    foxy_running = false;
     battery_power = 1000;
     passive_battery_drain_interval = 1000;
     battery_display_value = battery_power / 10;
@@ -17,6 +20,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     entered_office = false;
     player_alive = true;
     bonnie_jumpscare = false;
+    foxy_jumpscare = false;
     game_time = 0;
     frame_counter_60 = 0;
 
@@ -96,6 +100,8 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     change_cam_sound_buffer.loadFromFile("src/sound/Change_Cam.wav");
     lights_on_sound_buffer.loadFromFile("src/sound/Light_On.wav");
     lights_off_sound_buffer.loadFromFile("src/sound/Light_Off.wav");
+    lights_on_sound_playing = false;
+    lights_off_sound_playing = false;
     animatronic_at_door_sound_buffer.loadFromFile("src/sound/Ani_At_door.wav");
     animatronic_sound_playing = false;
     power_zero_buffer.loadFromFile("src/sound/power_zero.wav");
@@ -107,6 +113,9 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1) {
     foxy_bgm_sound.setLoop(true);
     foxy_bgm_sound.setVolume(75.f);
     foxy_bgm_sound_playing = false;
+    foxy_running_sound_buffer.loadFromFile("src/sound/Foxy_Running.wav");
+    foxy_running_sound.setBuffer(foxy_running_sound_buffer);
+    foxy_running_sound_playing = false;
 
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
@@ -242,9 +251,23 @@ void Main_Game_Window::Update() {
         foxy_bgm_sound.pause();
         foxy_bgm_sound_playing = false;
     }
+    if (cam_mode == true && active_cam == "Cam 2A") {
+        if (foxy_running) {
+            if (foxy_running_sound_playing == false) {
+                foxy_running_sound.play();
+                foxy_running_sound_playing = true;
+            }
+        }
+    }
+    else {
+        if (!foxy_running) {
+            foxy_running_sound.pause();
+        }
+        foxy_running_sound_playing = false;
+    }
 
     // Timer engine
-    // Manages Bonnie and Battery
+    // Manages Bonnie, Foxy, and Battery
     ++frame_counter_60;
     if (frame_counter_60 >= 60) {
         if (game_time >= GAME_LENGTH) {
@@ -289,6 +312,37 @@ void Main_Game_Window::Update() {
             }
             bonnie_jumpscare_counter++;
         }
+        if (night_1.findAnimatronicCamName(foxy) == "Cam 2A") {
+            if (active_cam == "Cam 2A") {
+                foxy_running = true;
+                if (foxy_jumpscare_counter <= 20) {
+                    foxy.setFrame(1);
+                }
+                else {
+                    foxy.setFrame(2);
+                }
+                foxy_jumpscare_counter += 20;
+            }
+            if (foxy_jumpscare_counter >= 60) {
+                if (getdoorClosed() == false) {
+                    night_1.enterOffice(foxy);
+                    entered_office = true;
+                    player_alive = false;
+                    night_lose = true;
+                    foxy_jumpscare = true;
+                }
+                else {
+                    leaving_door_sound.setBuffer(leaving_door_sound_buffer);
+                    leaving_door_sound.play();
+                    animatronic_sound_playing = false;
+                    night_1.moveAnimatronic(foxy);
+                    foxy_jumpscare_counter = 0;
+                    foxy.resetFrame();
+                    foxy_running = false;
+                }
+            }
+            foxy_jumpscare_counter++;
+        }
         if (move_count == 5) {
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
                 if (getdoorClosed() == false) {
@@ -298,18 +352,37 @@ void Main_Game_Window::Update() {
                 else {
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
+                    animatronic_sound_playing = false;
                     std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
                     setdoorClosed(false);
                     left_door.openCloseDoor(getdoorClosed(), getLightsOn());
                 }
             }
             if (entered_office == false) {
+                // Bonnie
                 std::uniform_int_distribution<int> uid(1,20);
-                int random_move_value = uid(rng);
-                if (bonnie.getLevel() >= random_move_value) {
+                int random_move_value_bonnie = uid(rng);
+                if (bonnie.getLevel() >= random_move_value_bonnie) {
                     night_1.moveAnimatronic(bonnie);
                 }
                 night_1.findAnimatronic(bonnie);
+
+                // Foxy
+                int random_move_value_foxy = uid(rng);
+                if (foxy.getLevel() >= random_move_value_foxy) {
+                    if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
+                        if (foxy.getStage() < 4) {
+                            if (cam_mode == true && active_cam != "Cam 1C") {
+                                foxy.incrementStage();
+                            }
+                        }
+                        else {
+                            night_1.moveAnimatronic(foxy);
+                            foxy.resetStage();
+                        }
+                    }
+                }
+                night_1.findAnimatronic(foxy);
             }
             move_count = 0;
         }
@@ -363,6 +436,23 @@ void Main_Game_Window::Draw() {
         cam_sprite.setScale(sf::Vector2f(1, 1));
         game_window.draw(cam_sprite);
 
+        // Drawing foxy on Cam 2A
+        if (active_cam == "Cam 2A" && foxy_running && night_1.findAnimatronicCamName(foxy) == "Cam 2A") {
+            sf::Texture foxy_texture;
+            sf::Sprite foxy_sprite;
+            foxy_texture.loadFromFile("src/graphics/foxy.png");
+            foxy_sprite.setTexture(foxy_texture);
+            if (foxy.getFrame() == 1) {
+                foxy_sprite.setPosition(sf::Vector2f(200, 200));
+                foxy_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else {
+                foxy_sprite.setPosition(sf::Vector2f(50, 225));
+                foxy_sprite.setScale(sf::Vector2f(1, 1));
+            }
+            game_window.draw(foxy_sprite);
+        }
+
         // Cam Name bottom left
         sf::Font cam_name_font;
         sf::Text cam_name_text;
@@ -410,7 +500,9 @@ void Main_Game_Window::Draw() {
                 bonnie_sprite.setPosition(sf::Vector2f(150, 400));
                 bonnie_sprite.setScale(sf::Vector2f(0.7, 0.7));
             }
-            game_window.draw(bonnie_sprite);
+            if (!foxy_running && active_cam != "Cam 2A") {
+                game_window.draw(bonnie_sprite);
+            }
         }
 
     }
@@ -453,11 +545,15 @@ const bool Main_Game_Window::getLightsOn() {
 
 void Main_Game_Window::setLightsOn(bool newBool) {
     lightsOn = newBool;
-    if (lightsOn == true) {
+    if (lightsOn == true && lights_on_sound_playing == false) {
+        lights_on_sound_playing = true;
+        lights_off_sound_playing = false;
         lights_on_sound.setBuffer(lights_on_sound_buffer);
         lights_on_sound.play();
     }
-    else {
+    if (lightsOn == false && lights_off_sound_playing == false) {
+        lights_off_sound_playing = true;
+        lights_on_sound_playing = false;
         lights_off_sound.setBuffer(lights_off_sound_buffer);
         lights_off_sound.play();
     }
@@ -466,6 +562,7 @@ void Main_Game_Window::setLightsOn(bool newBool) {
 void Main_Game_Window::Run() {
     while (game_window.isOpen()) {
         if (night_win == true) {
+            foxy_bgm_sound.stop();
             game_window.clear();
             game_window.display();
             win_6_am_sound.setBuffer(win_6_am_buffer);
@@ -474,6 +571,7 @@ void Main_Game_Window::Run() {
             game_window.close();
         }
         if (night_lose == true) {
+            foxy_bgm_sound.stop();
             if (bonnie_jumpscare) {
                 sf::Texture bonnie_texture;
                 sf::Sprite bonnie_sprite;
@@ -497,6 +595,9 @@ void Main_Game_Window::Run() {
                     game_window.display();
                     sf::sleep(sf::seconds(0.25f));
                 }
+            }
+            if (foxy_jumpscare) {
+                std::cout << "Foxy warns you the pizza is hot!" << std::endl;
             }
             game_window.close();
         }

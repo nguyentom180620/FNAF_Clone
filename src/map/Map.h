@@ -34,6 +34,7 @@ public:
     Cam find(Base_Animatronic const& base);
     const Cam find(Base_Animatronic const& base) const;
     void addAnimatronic(Base_Animatronic& base);
+    void addFoxy(Base_Animatronic& base);
     void moveAnimatronic(Base_Animatronic& base, Cam& oldCam, Cam& newCam);
     void printCamContent(std::string& cam);
     bool animatronicAtDoor(Base_Animatronic& base, std::string door);

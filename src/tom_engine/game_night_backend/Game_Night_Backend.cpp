@@ -20,7 +20,6 @@ void Game_Night_Backend::moveAnimatronic(Base_Animatronic& base) {
     const unsigned int newCamInt = uid(rng);
     const std::string& newCamString = newCamVector[newCamInt];
 
-    // Right now, just testing to move base from Cam 1A to Cam 1B
     if (map.find(base) == map.accessCam(oldCamString)) {
         map.moveAnimatronic(base, map.accessCam(oldCamString), map.accessCam(newCamString));
     }
@@ -36,7 +35,7 @@ void Game_Night_Backend::enterOffice(Base_Animatronic &base) {
     if (map.find(base) == map.accessCam(door)) {
         map.accessCam(door).removeAnimatronic(base);
         office = &base;
-        std::cout << "Bonnie entered the office!" << std::endl;
+        std::cout << base.getName() << " entered the office!" << std::endl;
     }
     else {
         std::cout << "Something went wrong in Game_Night_Backend::enterOffice (Shouldn't be called right now)" << std::endl;
@@ -216,10 +215,19 @@ void Game_Night_Backend::addAnimatronic(Base_Animatronic &base) {
     map.addAnimatronic(base);
 }
 
+void Game_Night_Backend::addFoxy(Base_Animatronic &base) {
+    map.addFoxy(base);
+}
+
 // Method to find animatronics
 void Game_Night_Backend::findAnimatronic(Base_Animatronic &base) {
-    std::cout << "Bonnie is at: " << map.find(base).getName() << std::endl;
+    std::cout << base.getName() << " is at: " << map.find(base).getName() << std::endl;
 }
+
+std::string Game_Night_Backend::findAnimatronicCamName(Base_Animatronic &base) {
+    return map.find(base).getName();
+}
+
 
 bool Game_Night_Backend::animatronicAtDoorCheck(Base_Animatronic &base, std::string doorName) {
     return map.animatronicAtDoor(base, doorName);

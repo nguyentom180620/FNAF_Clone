@@ -140,6 +140,10 @@ void Map::addAnimatronic(Base_Animatronic &base) {
     cams["Cam 1A"].addAnimatronic(base);
 }
 
+void Map::addFoxy(Base_Animatronic& base) {
+    cams["Cam 1C"].addAnimatronic(base);
+}
+
 void Map::moveAnimatronic(Base_Animatronic &base, Cam& oldCam, Cam& newCam) {
     oldCam.removeAnimatronic(base);
     newCam.addAnimatronic(base);
