@@ -6,8 +6,8 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Bonnie Jumpscare added!
- * Next is adding Chica
+/* Adding sounds!
+ * After will add Chica
 */
 
 int main() {
