@@ -28,10 +28,15 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(20),
     night_win = false;
     night_lose = false;
 
-    doorClosed = false;
-    lightsOn = false;
+    leftdoorClosed = false;
+    leftlightsOn = false;
     left_door_open_close_clicked_on = false;
     left_door_light_clicked_on = false;
+
+    rightdoorClosed = false;
+    rightlightsOn = false;
+    right_door_open_close_clicked_on = false;
+    right_door_light_clicked_on = false;
 
     open_cam_button_clicked_on = false;
     cam_mode = false;
@@ -149,7 +154,7 @@ void Main_Game_Window::Update() {
         // Update Left Door open close toggle
         if (left_door_open_close_clicked_on) {
             setdoorClosed(!getdoorClosed());
-            if (doorClosed == true) {
+            if (leftdoorClosed == true) {
                 close_door_sound.setBuffer(close_door_sound_buffer);
                 close_door_sound.play();
                 std::cout << "You closed the door!" << std::endl;
@@ -171,13 +176,14 @@ void Main_Game_Window::Update() {
         }
     }
     else {
-        doorClosed = false;
-        lightsOn = false;
+        battery_power = 0;
+        leftdoorClosed = false;
+        leftlightsOn = false;
         cam_mode = false;
         battery_power_usage_array = {false, false, false};
         left_door.doorLightOff();
         left_door.lightButtonOff();
-        left_door.openCloseDoor(doorClosed, lightsOn);
+        left_door.openCloseDoor(leftdoorClosed, leftlightsOn);
 
         lights_on_sound.stop();
         lights_off_sound.stop();
@@ -190,9 +196,9 @@ void Main_Game_Window::Update() {
     }
 
     // Have Left Door update while lightsOn is true
-    if (lightsOn) {
+    if (leftlightsOn) {
         left_door.lightButtonOn();
-        if (doorClosed == false) {
+        if (leftdoorClosed == false) {
             // // If Bonnie is at the door,
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
                 if (cam_mode == false && animatronic_sound_playing == false) {
@@ -212,7 +218,7 @@ void Main_Game_Window::Update() {
         }
     }
     else {
-        if (doorClosed == false) {
+        if (leftdoorClosed == false) {
             left_door.doorLightOff();
         }
         left_door.lightButtonOff();
@@ -220,13 +226,13 @@ void Main_Game_Window::Update() {
     }
 
     // Update array every frame to get faster feedback on usage bar
-    if (doorClosed) {
+    if (leftdoorClosed) {
         battery_power_usage_array[1] = true;
     }
     else {
         battery_power_usage_array[1] = false;
     }
-    if (lightsOn) {
+    if (leftlightsOn) {
         battery_power_usage_array[2] = true;
     }
     else {
@@ -365,9 +371,6 @@ void Main_Game_Window::Update() {
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
                     animatronic_sound_playing = false;
-                    std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
-                    setdoorClosed(false);
-                    left_door.openCloseDoor(getdoorClosed(), getLightsOn());
                 }
             }
             if (entered_office == false) {
@@ -535,9 +538,26 @@ void Main_Game_Window::Draw() {
         game_window.draw(left_door.getLightButtonSprite());
         game_window.draw(left_door.getDoorButtonCaption());
         game_window.draw(left_door.getLightButtonCaption());
-        game_window.draw(bonnie.getSprite());
+        game_window.draw(right_door.getSprite());
+        game_window.draw(right_door.getDoorButtonSprite());
+        game_window.draw(right_door.getLightButtonSprite());
+        game_window.draw(right_door.getDoorButtonCaption());
+        game_window.draw(right_door.getLightButtonCaption());
         game_window.draw(Office_Background_sprite);
+        game_window.draw(bonnie.getSprite());
         game_window.draw(freddy_noseSprite);
+    }
+
+    if (battery_power <= 0) {
+        sf::RenderTexture dark_overlay_texture;
+        sf::Sprite dark_overlay_sprite;
+        dark_overlay_texture.create(1000, 700);
+        dark_overlay_texture.clear(sf::Color::White);
+        dark_overlay_texture.display();
+        dark_overlay_sprite.setTexture(dark_overlay_texture.getTexture());
+        dark_overlay_sprite.setPosition(sf::Vector2f(0, 100));
+        dark_overlay_sprite.setColor(sf::Color(0,0,0,128));
+        game_window.draw(dark_overlay_sprite);
     }
 
     // Always on Screen
@@ -555,26 +575,26 @@ void Main_Game_Window::Draw() {
 }
 
 const bool Main_Game_Window::getdoorClosed() {
-    return doorClosed;
+    return leftdoorClosed;
 }
 
 void Main_Game_Window::setdoorClosed(bool newBool) {
-    doorClosed = newBool;
+    leftdoorClosed = newBool;
 }
 
 const bool Main_Game_Window::getLightsOn() {
-    return lightsOn;
+    return leftlightsOn;
 }
 
 void Main_Game_Window::setLightsOn(bool newBool) {
-    lightsOn = newBool;
-    if (lightsOn == true && lights_on_sound_playing == false) {
+    leftlightsOn = newBool;
+    if (leftlightsOn == true && lights_on_sound_playing == false) {
         lights_on_sound_playing = true;
         lights_off_sound_playing = false;
         lights_on_sound.setBuffer(lights_on_sound_buffer);
         lights_on_sound.play();
     }
-    if (lightsOn == false && lights_off_sound_playing == false) {
+    if (leftlightsOn == false && lights_off_sound_playing == false) {
         lights_off_sound_playing = true;
         lights_on_sound_playing = false;
         lights_off_sound.setBuffer(lights_off_sound_buffer);
@@ -686,8 +706,8 @@ void Main_Game_Window::Run() {
                         }
                         // Quick Light Button Toggle instead of hold
                         if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
-                            lightsOn = !lightsOn;
-                            if (lightsOn == true) {
+                            leftlightsOn = !leftlightsOn;
+                            if (leftlightsOn == true) {
                                 lights_on_sound.setBuffer(lights_on_sound_buffer);
                                 lights_on_sound.play();
                             }
@@ -728,7 +748,7 @@ void Main_Game_Window::Run() {
                     if (left_door.clickedOn(translated_mouse_pos)) {
                         if (event.mouseButton.button == sf::Mouse::Right) {
                             setLightsOn(false);
-                            if (doorClosed == false) {
+                            if (leftdoorClosed == false) {
                                 left_door.doorLightOff();
                             }
                             // Reset Animatronic Sprites
@@ -746,7 +766,7 @@ void Main_Game_Window::Run() {
     std::cout << "Move Counter: " << move_count << std::endl;
     std::cout << "Bonnie Jumpscare Counter: " << bonnie_jumpscare_counter << std::endl;
     std::cout << "Entered Office: " << std::boolalpha << entered_office << std::endl;
-    std::cout << "Door Closed: " << std::boolalpha << doorClosed << std::endl;
+    std::cout << "Door Closed: " << std::boolalpha << leftdoorClosed << std::endl;
     std::cout << "Player Alive: " << std::boolalpha << player_alive << std::endl;
     std::cout << "Game Time (in seconds): " << game_time << std::endl;
     std::cout << std::endl;

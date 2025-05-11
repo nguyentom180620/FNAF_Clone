@@ -6,6 +6,7 @@
 #include "../../../map/Map.h"
 #include "../../game_night_backend/Game_Night_Backend.h"
 #include "../../components/sprites/Left_Door.h"
+#include "../../components/sprites/Right_Door.h"
 #include  "../../components/sprites/Open_Cam_Button.h"
 #include "../../components/sprites/Camera_System.h"
 class Main_Game_Window {
@@ -56,11 +57,17 @@ class Main_Game_Window {
     bool night_win;
     bool night_lose;
 
-    bool doorClosed;
-    bool lightsOn;
+    bool leftdoorClosed;
+    bool leftlightsOn;
     bool left_door_open_close_clicked_on;
     bool left_door_light_clicked_on;
     Left_Door left_door;
+
+    bool rightdoorClosed;
+    bool rightlightsOn;
+    bool right_door_open_close_clicked_on;
+    bool right_door_light_clicked_on;
+    Right_Door right_door;
 
     bool open_cam_button_clicked_on;
     bool cam_mode;

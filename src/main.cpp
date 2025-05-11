@@ -6,8 +6,8 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Foxy added!
- * Now add Chica!
+/* Right Door added!
+ * Now to add functionality for right door
 */
 
 int main() {
