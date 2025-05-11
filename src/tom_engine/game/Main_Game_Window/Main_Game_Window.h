@@ -18,6 +18,7 @@ class Main_Game_Window {
     int move_count;
     int bonnie_jumpscare_counter;
     int foxy_jumpscare_counter;
+    int number_of_foxy_hits;
 
     int battery_power;
     std::string battery_display_value;

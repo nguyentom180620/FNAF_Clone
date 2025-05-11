@@ -2,7 +2,7 @@
 #include <iostream>
 #define FONT_SIZE 35
 
-Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1), foxy(20) {
+Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(20), foxy(20) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
@@ -10,6 +10,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(1), 
     move_count = 0;
     bonnie_jumpscare_counter = 0;
     foxy_jumpscare_counter = 0;
+    number_of_foxy_hits = 0;
     foxy_running = false;
     battery_power = 1000;
     passive_battery_drain_interval = 1000;
@@ -261,7 +262,7 @@ void Main_Game_Window::Update() {
     }
     else {
         if (!foxy_running) {
-            foxy_running_sound.pause();
+            foxy_running_sound.stop();
         }
         foxy_running_sound_playing = false;
     }
@@ -312,9 +313,16 @@ void Main_Game_Window::Update() {
             }
             bonnie_jumpscare_counter++;
         }
+        if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
+            if (foxy.getStage() == 4) {
+                night_1.moveAnimatronic(foxy);
+            }
+        }
         if (night_1.findAnimatronicCamName(foxy) == "Cam 2A") {
             if (active_cam == "Cam 2A") {
                 foxy_running = true;
+            }
+            if (foxy_running) {
                 if (foxy_jumpscare_counter <= 20) {
                     foxy.setFrame(1);
                 }
@@ -332,11 +340,15 @@ void Main_Game_Window::Update() {
                     foxy_jumpscare = true;
                 }
                 else {
+                    // Reduce power by number of foxy hits
+                    battery_power -= 10 + number_of_foxy_hits * 50;
+                    number_of_foxy_hits += 1;
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
                     animatronic_sound_playing = false;
                     night_1.moveAnimatronic(foxy);
                     foxy_jumpscare_counter = 0;
+                    foxy.resetStage();
                     foxy.resetFrame();
                     foxy_running = false;
                 }
@@ -372,13 +384,9 @@ void Main_Game_Window::Update() {
                 if (foxy.getLevel() >= random_move_value_foxy) {
                     if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
                         if (foxy.getStage() < 4) {
-                            if (cam_mode == true && active_cam != "Cam 1C") {
+                            if (cam_mode == false) {
                                 foxy.incrementStage();
                             }
-                        }
-                        else {
-                            night_1.moveAnimatronic(foxy);
-                            foxy.resetStage();
                         }
                     }
                 }
@@ -426,15 +434,30 @@ void Main_Game_Window::Draw() {
         game_window.draw(vertical_line);
 
         // Get current cam scene
-        sf::Texture cam_texture;
-        sf::Sprite cam_sprite;
-        std::string name_for_file = active_cam.substr(0,3) + "_" + active_cam.substr(4);
-        std::string camDisplay_file_location = "src/graphics/" + name_for_file + ".png";
-        cam_texture.loadFromFile(camDisplay_file_location);
-        cam_sprite.setTexture(cam_texture);
-        cam_sprite.setPosition(sf::Vector2f(0, 100));
-        cam_sprite.setScale(sf::Vector2f(1, 1));
-        game_window.draw(cam_sprite);
+
+        //For foxy stages
+        if (active_cam == "Cam 1C") {
+            sf::Texture cam1C_texture;
+            sf::Sprite cam1C_sprite;
+            std::string cam1CDisplay_file_location = "src/graphics/Cam_1C_Stage" + std::to_string(foxy.getStage()) + ".png";
+            cam1C_texture.loadFromFile(cam1CDisplay_file_location);
+            cam1C_sprite.setTexture(cam1C_texture);
+            cam1C_sprite.setPosition(sf::Vector2f(0, 100));
+            cam1C_sprite.setScale(sf::Vector2f(1, 1));
+            game_window.draw(cam1C_sprite);
+        }
+        // Every other cam
+        else {
+            sf::Texture cam_texture;
+            sf::Sprite cam_sprite;
+            std::string name_for_file = active_cam.substr(0,3) + "_" + active_cam.substr(4);
+            std::string camDisplay_file_location = "src/graphics/" + name_for_file + ".png";
+            cam_texture.loadFromFile(camDisplay_file_location);
+            cam_sprite.setTexture(cam_texture);
+            cam_sprite.setPosition(sf::Vector2f(0, 100));
+            cam_sprite.setScale(sf::Vector2f(1, 1));
+            game_window.draw(cam_sprite);
+        }
 
         // Drawing foxy on Cam 2A
         if (active_cam == "Cam 2A" && foxy_running && night_1.findAnimatronicCamName(foxy) == "Cam 2A") {
@@ -500,7 +523,7 @@ void Main_Game_Window::Draw() {
                 bonnie_sprite.setPosition(sf::Vector2f(150, 400));
                 bonnie_sprite.setScale(sf::Vector2f(0.7, 0.7));
             }
-            if (!foxy_running && active_cam != "Cam 2A") {
+            if (!(foxy_running && active_cam == "Cam 2A")) {
                 game_window.draw(bonnie_sprite);
             }
         }
@@ -573,9 +596,9 @@ void Main_Game_Window::Run() {
         if (night_lose == true) {
             foxy_bgm_sound.stop();
             if (bonnie_jumpscare) {
-                sf::Texture bonnie_texture;
-                sf::Sprite bonnie_sprite;
-                bonnie_sprite.setPosition(125, 75);
+                sf::Texture bonnie_jumpscare_texture;
+                sf::Sprite bonnie_jumpscare_sprite;
+                bonnie_jumpscare_sprite.setPosition(125, 75);
 
                 sound_effect.setBuffer(jumpscare_sound_buffer);
                 sound_effect.play();
@@ -583,21 +606,42 @@ void Main_Game_Window::Run() {
                 // Loop frames
                 for (int i = 0; i < 5; i++) {
                     game_window.clear();
-                    bonnie_texture.loadFromFile("src/graphics/Bonnie_Jumpscare_Frame1.png");
-                    bonnie_sprite.setTexture(bonnie_texture);
-                    game_window.draw(bonnie_sprite);
+                    bonnie_jumpscare_texture.loadFromFile("src/graphics/Bonnie_Jumpscare_Frame1.png");
+                    bonnie_jumpscare_sprite.setTexture(bonnie_jumpscare_texture);
+                    game_window.draw(bonnie_jumpscare_sprite);
                     game_window.display();
                     sf::sleep(sf::seconds(0.25f));
                     game_window.clear();
-                    bonnie_texture.loadFromFile("src/graphics/Bonnie_Jumpscare_Frame2.png");
-                    bonnie_sprite.setTexture(bonnie_texture);
-                    game_window.draw(bonnie_sprite);
+                    bonnie_jumpscare_texture.loadFromFile("src/graphics/Bonnie_Jumpscare_Frame2.png");
+                    bonnie_jumpscare_sprite.setTexture(bonnie_jumpscare_texture);
+                    game_window.draw(bonnie_jumpscare_sprite);
                     game_window.display();
                     sf::sleep(sf::seconds(0.25f));
                 }
             }
             if (foxy_jumpscare) {
-                std::cout << "Foxy warns you the pizza is hot!" << std::endl;
+                sf::Texture foxy_jumpscare_texture;
+                sf::Sprite foxy_jumpscare_sprite;
+                foxy_jumpscare_sprite.setPosition(205, 75);
+
+                sound_effect.setBuffer(jumpscare_sound_buffer);
+                sound_effect.play();
+
+                // Loop frames
+                for (int i = 0; i < 5; i++) {
+                    game_window.clear();
+                    foxy_jumpscare_texture.loadFromFile("src/graphics/Foxy_Jumpscare_Frame_1.png");
+                    foxy_jumpscare_sprite.setTexture(foxy_jumpscare_texture);
+                    game_window.draw(foxy_jumpscare_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                    game_window.clear();
+                    foxy_jumpscare_texture.loadFromFile("src/graphics/Foxy_Jumpscare_Frame_2.png");
+                    foxy_jumpscare_sprite.setTexture(foxy_jumpscare_texture);
+                    game_window.draw(foxy_jumpscare_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                }
             }
             game_window.close();
         }
