@@ -1,21 +1,22 @@
 #pragma once
 
 // Open Door
-const char* right_door_open_empty_text = R"V0G0N(  _  =   |
-|        |
-|        |
-|        |
-|        |
-|        |
-|        |
-|        |
-|        |
-|        |
-|        |
-|        |
--        |
-   -     |
-       - |)V0G0N";
+const char* right_door_open_empty_text = R"V0G0N(        _
+ _   =    |
+|         |
+|         |
+|         |
+|         |
+|         |
+|         |
+|         |
+|         |
+|         |
+|         |
+|         |
+ -        |
+      -   |
+         -|)V0G0N";
 
 // Closed Door
 const char* right_door_closed_text = R"V0G0N(        _
@@ -31,7 +32,7 @@ const char* right_door_closed_text = R"V0G0N(        _
 |\ \ \ \ \|
 |= = = = =|
 |= = = = =|
-   - = = =|
+ -   = = =|
       -  =|
          -|)V0G0N";
 

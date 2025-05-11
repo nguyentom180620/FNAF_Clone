@@ -2,7 +2,8 @@
 #include <iostream>
 #define FONT_SIZE 35
 
-Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(20), foxy(20) {
+Main_Game_Window::Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level): night_1(rng),
+bonnie(bonnie_level), foxy(foxy_level) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
@@ -15,7 +16,7 @@ Main_Game_Window::Main_Game_Window(std::mt19937& rng): night_1(rng), bonnie(20),
     battery_power = 1000;
     passive_battery_drain_interval = 1000;
     battery_display_value = battery_power / 10;
-    battery_power_usage_array = {true, false, false, false};
+    battery_power_usage_array = {true, false, false, false, false, false};
     battery_power_usage_value = std::count(battery_power_usage_array.begin(),
         battery_power_usage_array.end(), true);
     entered_office = false;
@@ -153,7 +154,7 @@ void Main_Game_Window::Update() {
 
         // Update Left Door open close toggle
         if (left_door_open_close_clicked_on) {
-            setdoorClosed(!getdoorClosed());
+            setleftdoorClosed(!getleftdoorClosed());
             if (leftdoorClosed == true) {
                 close_door_sound.setBuffer(close_door_sound_buffer);
                 close_door_sound.play();
@@ -164,26 +165,58 @@ void Main_Game_Window::Update() {
                 open_door_sound.play();
                 std::cout << "You opened the door!" << std::endl;
             }
-            left_door.openCloseDoor(getdoorClosed(), getLightsOn());
+            left_door.openCloseDoor(getleftdoorClosed(), getleftLightsOn());
             left_door_open_close_clicked_on = false;
             // Reset Animatronic Sprite
             bonnie.resetSprite();
         }
+
+        // Update Right Door open close toggle
+        if (right_door_open_close_clicked_on) {
+            rightdoorClosed = !rightdoorClosed;
+            if (rightdoorClosed == true) {
+                close_door_sound.setBuffer(close_door_sound_buffer);
+                close_door_sound.play();
+                std::cout << "You closed the door!" << std::endl;
+            }
+            else {
+                open_door_sound.setBuffer(open_door_sound_buffer);
+                open_door_sound.play();
+                std::cout << "You opened the door!" << std::endl;
+            }
+            right_door.openCloseDoor(getrightdoorClosed(), getrightLightsOn());
+            right_door_open_close_clicked_on = false;
+            // Reset Animatronic Sprite
+            // Will be Chica sprite looking like bonnie.resetSprite();
+        }
+
         // Update Left Door Light
         if (left_door_light_clicked_on) {
-            setLightsOn(true);
+            setleftLightsOn(true);
             left_door_light_clicked_on = false;
         }
+
+        // Update Right Door Light
+        if (right_door_light_clicked_on) {
+            setrightLightsOn(true);
+            right_door_light_clicked_on = false;
+        }
     }
+
     else {
         battery_power = 0;
         leftdoorClosed = false;
         leftlightsOn = false;
+        rightdoorClosed = false;
+        rightlightsOn = false;
         cam_mode = false;
-        battery_power_usage_array = {false, false, false};
+        battery_power_usage_array = {false, false, false, false, false, false};
         left_door.doorLightOff();
         left_door.lightButtonOff();
         left_door.openCloseDoor(leftdoorClosed, leftlightsOn);
+        right_door.doorLightOff();
+        right_door.lightButtonOff();
+        right_door.openCloseDoor(rightdoorClosed, rightlightsOn);
 
         lights_on_sound.stop();
         lights_off_sound.stop();
@@ -225,6 +258,36 @@ void Main_Game_Window::Update() {
         bonnie.resetSprite();
     }
 
+    // Have Right Door update while lightsOn is true
+    if (rightlightsOn) {
+        right_door.lightButtonOn();
+        if (rightdoorClosed == false) {
+            // If Chica is at the door, use bonnie left door behavior as model
+            // if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
+            //     if (cam_mode == false && animatronic_sound_playing == false) {
+            //         animatronic_sound_playing = true;
+            //         animatronic_at_door_sound.setBuffer(animatronic_at_door_sound_buffer);
+            //         animatronic_at_door_sound.play();
+            //     }
+            //     bonnie.loadAtLeftDoorSprite();
+            //     left_door.doorLightOff();
+            // }
+            // else {
+            //     // Reset Animatronic Sprites
+            //     animatronic_sound_playing = false;
+            //     bonnie.resetSprite();
+                right_door.doorLightOn();
+            // }
+        }
+    }
+    else {
+        if (rightdoorClosed == false) {
+            right_door.doorLightOff();
+        }
+        right_door.lightButtonOff();
+        // bonnie.resetSprite();
+    }
+
     // Update array every frame to get faster feedback on usage bar
     if (leftdoorClosed) {
         battery_power_usage_array[1] = true;
@@ -244,10 +307,22 @@ void Main_Game_Window::Update() {
     else {
         battery_power_usage_array[3] = false;
     }
+    if (rightdoorClosed) {
+        battery_power_usage_array[4] = true;
+    }
+    else {
+        battery_power_usage_array[4] = false;
+    }
+    if (rightlightsOn) {
+        battery_power_usage_array[5] = true;
+    }
+    else {
+        battery_power_usage_array[5] = false;
+    }
     battery_power_usage_value = std::count(battery_power_usage_array.begin(),
         battery_power_usage_array.end(), true);
 
-    // Music Management
+    // Music Management for Foxy
     if (cam_mode == true && active_cam == "Cam 1C") {
         if (foxy_bgm_sound_playing == false) {
             foxy_bgm_sound.play();
@@ -338,7 +413,7 @@ void Main_Game_Window::Update() {
                 foxy_jumpscare_counter += 20;
             }
             if (foxy_jumpscare_counter >= 60) {
-                if (getdoorClosed() == false) {
+                if (getleftdoorClosed() == false) {
                     night_1.enterOffice(foxy);
                     entered_office = true;
                     player_alive = false;
@@ -363,7 +438,7 @@ void Main_Game_Window::Update() {
         }
         if (move_count == 5) {
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
-                if (getdoorClosed() == false) {
+                if (getleftdoorClosed() == false) {
                     night_1.enterOffice(bonnie);
                     entered_office = true;
                 }
@@ -574,19 +649,19 @@ void Main_Game_Window::Draw() {
     game_window.display();
 }
 
-const bool Main_Game_Window::getdoorClosed() {
+const bool Main_Game_Window::getleftdoorClosed() {
     return leftdoorClosed;
 }
 
-void Main_Game_Window::setdoorClosed(bool newBool) {
+void Main_Game_Window::setleftdoorClosed(bool newBool) {
     leftdoorClosed = newBool;
 }
 
-const bool Main_Game_Window::getLightsOn() {
+const bool Main_Game_Window::getleftLightsOn() {
     return leftlightsOn;
 }
 
-void Main_Game_Window::setLightsOn(bool newBool) {
+void Main_Game_Window::setleftLightsOn(bool newBool) {
     leftlightsOn = newBool;
     if (leftlightsOn == true && lights_on_sound_playing == false) {
         lights_on_sound_playing = true;
@@ -595,6 +670,34 @@ void Main_Game_Window::setLightsOn(bool newBool) {
         lights_on_sound.play();
     }
     if (leftlightsOn == false && lights_off_sound_playing == false) {
+        lights_off_sound_playing = true;
+        lights_on_sound_playing = false;
+        lights_off_sound.setBuffer(lights_off_sound_buffer);
+        lights_off_sound.play();
+    }
+}
+
+const bool Main_Game_Window::getrightdoorClosed() {
+    return rightdoorClosed;
+}
+
+void Main_Game_Window::setrightdoorClosed(bool newBool) {
+    rightdoorClosed = newBool;
+}
+
+const bool Main_Game_Window::getrightLightsOn() {
+    return rightlightsOn;
+}
+
+void Main_Game_Window::setrightLightsOn(bool newBool) {
+    rightlightsOn = newBool;
+    if (rightlightsOn == true && lights_on_sound_playing == false) {
+        lights_on_sound_playing = true;
+        lights_off_sound_playing = false;
+        lights_on_sound.setBuffer(lights_on_sound_buffer);
+        lights_on_sound.play();
+    }
+    if (rightlightsOn == false && lights_off_sound_playing == false) {
         lights_off_sound_playing = true;
         lights_on_sound_playing = false;
         lights_off_sound.setBuffer(lights_off_sound_buffer);
@@ -701,6 +804,9 @@ void Main_Game_Window::Run() {
                         if (left_door.clickedOn(translated_mouse_pos)) {
                             left_door_open_close_clicked_on = true;
                         }
+                        if (right_door.clickedOn(translated_mouse_pos)) {
+                            right_door_open_close_clicked_on = true;
+                        }
                         if (open_cam_button.clickedOn(translated_mouse_pos)) {
                             open_cam_button_clicked_on = true;
                         }
@@ -708,6 +814,17 @@ void Main_Game_Window::Run() {
                         if (left_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
                             leftlightsOn = !leftlightsOn;
                             if (leftlightsOn == true) {
+                                lights_on_sound.setBuffer(lights_on_sound_buffer);
+                                lights_on_sound.play();
+                            }
+                            else {
+                                lights_off_sound.setBuffer(lights_off_sound_buffer);
+                                lights_off_sound.play();
+                            }
+                        }
+                        if (right_door.getLightButtonSprite().getGlobalBounds().contains(translated_mouse_pos)) {
+                            rightlightsOn = !rightlightsOn;
+                            if (rightlightsOn == true) {
                                 lights_on_sound.setBuffer(lights_on_sound_buffer);
                                 lights_on_sound.play();
                             }
@@ -735,6 +852,9 @@ void Main_Game_Window::Run() {
                     if (left_door.clickedOn(translated_mouse_pos)) {
                         left_door_light_clicked_on = true;
                     }
+                    if (right_door.clickedOn(translated_mouse_pos)) {
+                        right_door_light_clicked_on = true;
+                    }
                 }
             }
             if (event.type == sf::Event::MouseButtonReleased) {
@@ -744,15 +864,25 @@ void Main_Game_Window::Run() {
                 }
                 if (cam_mode == false) {
                     // Reference for this idea: https://en.sfml-dev.org/forums/index.php?topic=13412.0
-                    // If right-click released for left door light, stop!
+                    // If right-click released for door lights, stop!
                     if (left_door.clickedOn(translated_mouse_pos)) {
                         if (event.mouseButton.button == sf::Mouse::Right) {
-                            setLightsOn(false);
+                            setleftLightsOn(false);
                             if (leftdoorClosed == false) {
                                 left_door.doorLightOff();
                             }
                             // Reset Animatronic Sprites
                             bonnie.resetSprite();
+                        }
+                    }
+                    if (right_door.clickedOn(translated_mouse_pos)) {
+                        if (event.mouseButton.button == sf::Mouse::Right) {
+                            setrightLightsOn(false);
+                            if (rightdoorClosed == false) {
+                                right_door.doorLightOff();
+                            }
+                            // Reset Animatronic Sprites
+                            // bonnie.resetSprite();
                         }
                     }
                 }
@@ -766,7 +896,6 @@ void Main_Game_Window::Run() {
     std::cout << "Move Counter: " << move_count << std::endl;
     std::cout << "Bonnie Jumpscare Counter: " << bonnie_jumpscare_counter << std::endl;
     std::cout << "Entered Office: " << std::boolalpha << entered_office << std::endl;
-    std::cout << "Door Closed: " << std::boolalpha << leftdoorClosed << std::endl;
     std::cout << "Player Alive: " << std::boolalpha << player_alive << std::endl;
     std::cout << "Game Time (in seconds): " << game_time << std::endl;
     std::cout << std::endl;

@@ -129,11 +129,15 @@ class Main_Game_Window {
     void Update();
     void Draw();
 public:
-    Main_Game_Window(std::mt19937& rng);
+    Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level);
     ~Main_Game_Window();
-    const bool getdoorClosed();
-    void setdoorClosed(bool newBool);
-    const bool getLightsOn();
-    void setLightsOn(bool newBool);
+    const bool getleftdoorClosed();
+    void setleftdoorClosed(bool newBool);
+    const bool getleftLightsOn();
+    void setleftLightsOn(bool newBool);
+    const bool getrightdoorClosed();
+    void setrightdoorClosed(bool newBool);
+    const bool getrightLightsOn();
+    void setrightLightsOn(bool newBool);
     void Run();
 };

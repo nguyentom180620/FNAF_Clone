@@ -6,12 +6,12 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Right Door added!
- * Now to add functionality for right door
+/* Right Door functions added!
+ * Now add Chica
 */
 
 int main() {
-    Main_Game_Window main_game_window(rng);
+    Main_Game_Window main_game_window(rng, 0, 0);
     main_game_window.Run();
 
     return 0;
