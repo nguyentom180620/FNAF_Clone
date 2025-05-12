@@ -11,7 +11,7 @@ static std::mt19937 rng{rd()};
 */
 
 int main() {
-    Main_Game_Window main_game_window(rng, 0, 0, 20);
+    Main_Game_Window main_game_window(rng, 20, 20, 20);
     main_game_window.Run();
 
     return 0;

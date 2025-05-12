@@ -121,6 +121,8 @@ class Main_Game_Window {
 
     sf::SoundBuffer win_6_am_buffer;
     sf::Sound win_6_am_sound;
+    bool win_6_am_playing;
+    int game_win_timer;
 
     sf::SoundBuffer leaving_door_sound_buffer;
     sf::Sound leaving_door_sound;
@@ -146,5 +148,6 @@ public:
     void setrightdoorClosed(bool newBool);
     const bool getrightLightsOn();
     void setrightLightsOn(bool newBool);
+    void nightWinStopSounds();
     void Run();
 };

@@ -27,6 +27,7 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level) {
     foxy_jumpscare = false;
     chica_jumpscare = false;
     game_time = 0;
+    game_win_timer = 60 * 10;
     frame_counter_60 = 0;
 
     night_win = false;
@@ -119,6 +120,7 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level) {
     power_zero_buffer.loadFromFile("src/sound/power_zero.wav");
     power_zero_playing = false;
     win_6_am_buffer.loadFromFile("src/sound/Win_6_AM.wav");
+    win_6_am_playing = false;
     leaving_door_sound_buffer.loadFromFile("src/sound/Leaving_Door.wav");
     foxy_bgm_sound_buffer.loadFromFile("src/sound/foxy_bgm.wav");
     foxy_bgm_sound.setBuffer(foxy_bgm_sound_buffer);
@@ -774,16 +776,58 @@ void Main_Game_Window::setrightLightsOn(bool newBool) {
     }
 }
 
+void Main_Game_Window::nightWinStopSounds() {
+    sound_effect.stop();
+    open_door_sound.stop();
+    close_door_sound.stop();
+    open_cam_sound.stop();
+    close_cam_sound.stop();
+    change_cam_sound.stop();
+    lights_on_sound.stop();
+    lights_off_sound.stop();
+    bonnie_at_door_sound.stop();
+    chica_at_door_sound.stop();
+    power_zero_sound.stop();
+    leaving_door_sound.stop();
+    foxy_bgm_sound.stop();
+    foxy_running_sound.stop();
+}
+
 void Main_Game_Window::Run() {
     while (game_window.isOpen()) {
         if (night_win == true) {
-            foxy_bgm_sound.stop();
-            game_window.clear();
-            game_window.display();
-            win_6_am_sound.setBuffer(win_6_am_buffer);
-            win_6_am_sound.play();
-            sf::sleep(sf::seconds(10));
-            game_window.close();
+            nightWinStopSounds();
+            if (win_6_am_playing == false) {
+                win_6_am_playing = true;
+                win_6_am_sound.setBuffer(win_6_am_buffer);
+                win_6_am_sound.play();
+            }
+            sf::Font win_6_am_font;
+            sf::Text win_6_am_text;
+            win_6_am_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
+            if (game_win_timer > 235) {
+                game_window.clear();
+                win_6_am_text.setFont(win_6_am_font);
+                win_6_am_text.setString("6 AM!");
+                win_6_am_text.setCharacterSize(FONT_SIZE * 4);
+                win_6_am_text.setFillColor(sf::Color::White);
+                win_6_am_text.setPosition(sf::Vector2f(300, 350));
+                game_window.draw(win_6_am_text);
+                game_window.display();
+            }
+            else {
+                game_window.clear();
+                win_6_am_text.setFont(win_6_am_font);
+                win_6_am_text.setString("You won\nthe night!");
+                win_6_am_text.setCharacterSize(FONT_SIZE * 3);
+                win_6_am_text.setPosition(sf::Vector2f(250, 300));
+                game_window.draw(win_6_am_text);
+                game_window.display();
+            }
+            if (game_win_timer <= 0) {
+                game_window.close();
+            }
+            game_win_timer -= 1;
         }
         if (night_lose == true) {
             foxy_bgm_sound.stop();
@@ -831,6 +875,33 @@ void Main_Game_Window::Run() {
                     foxy_jumpscare_texture.loadFromFile("src/graphics/Foxy_Jumpscare_Frame_2.png");
                     foxy_jumpscare_sprite.setTexture(foxy_jumpscare_texture);
                     game_window.draw(foxy_jumpscare_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                }
+            }
+            if (chica_jumpscare) {
+                sf::Texture chica_jumpscare_texture;
+                sf::Sprite chica_jumpscare_sprite;
+                chica_jumpscare_texture.loadFromFile("src/graphics/Chica_Jumpscare_Frame_2.png");
+                chica_jumpscare_sprite.setTexture(chica_jumpscare_texture);
+                chica_jumpscare_sprite.setPosition(125, 75);
+
+                sound_effect.setBuffer(jumpscare_sound_buffer);
+                sound_effect.play();
+
+                // Loop frames
+                for (int i = 0; i < 5; i++) {
+                    game_window.clear();
+                    chica_jumpscare_texture.loadFromFile("src/graphics/Chica_Jumpscare_Frame_1.png");
+                    chica_jumpscare_sprite.setTexture(chica_jumpscare_texture);
+                    game_window.draw(chica_jumpscare_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                    game_window.clear();
+                    chica_jumpscare_texture.loadFromFile("src/graphics/Chica_Jumpscare_Frame_2.png");
+                    chica_jumpscare_sprite.setTexture(chica_jumpscare_texture);
+                    chica_jumpscare_sprite.setPosition(100, 75);
+                    game_window.draw(chica_jumpscare_sprite);
                     game_window.display();
                     sf::sleep(sf::seconds(0.25f));
                 }
@@ -957,7 +1028,9 @@ void Main_Game_Window::Run() {
                 }
             }
         }
-        Update();
-        Draw();
+        if (!(night_win || night_lose)) {
+            Update();
+            Draw();
+        }
     }
 }
