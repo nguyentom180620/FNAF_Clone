@@ -6,12 +6,12 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Added most of Chica
- * Next is adding Chica's jumpscare and updating 6 A.M. Screen
+/* Freddy Added
+ * Now to do tests and see if good before making full game
 */
 
 int main() {
-    Main_Game_Window main_game_window(rng, 0, 0, 0, 20);
+    Main_Game_Window main_game_window(rng, 20, 20, 20, 20);
     main_game_window.Run();
 
     return 0;

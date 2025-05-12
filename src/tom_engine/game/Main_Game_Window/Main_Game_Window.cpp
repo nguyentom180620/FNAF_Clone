@@ -760,8 +760,8 @@ void Main_Game_Window::Draw() {
                 freddy_sprite.setScale(sf::Vector2f(0.5, 0.5));
             }
             else if (current_cam_name == "Cam 7") {
-                freddy_sprite.setPosition(sf::Vector2f(25, 100));
-                freddy_sprite.setScale(sf::Vector2f(0.7, 0.7));
+                freddy_sprite.setPosition(sf::Vector2f(40, 205));
+                freddy_sprite.setScale(sf::Vector2f(0.30, 0.30));
             }
             game_window.draw(freddy_sprite);
         }
