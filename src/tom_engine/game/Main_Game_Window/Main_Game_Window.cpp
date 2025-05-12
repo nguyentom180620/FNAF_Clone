@@ -26,8 +26,10 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level) {
     bonnie_jumpscare = false;
     foxy_jumpscare = false;
     chica_jumpscare = false;
+    freddy_jumpscare = false;
     game_time = 0;
     game_win_timer = 60 * 10;
+    power_zero_timer = 60 * 22;
     frame_counter_60 = 0;
 
     night_win = false;
@@ -130,6 +132,9 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level) {
     foxy_running_sound_buffer.loadFromFile("src/sound/Foxy_Running.wav");
     foxy_running_sound.setBuffer(foxy_running_sound_buffer);
     foxy_running_sound_playing = false;
+    toreador_sound_buffer.loadFromFile("src/sound/Toreadors_March.wav");
+    toreador_sound.setBuffer(toreador_sound_buffer);
+    toreador_sound_playing = false;
 
     game_window.close();
     game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
@@ -233,6 +238,21 @@ void Main_Game_Window::Update() {
             power_zero_sound.setBuffer(power_zero_buffer);
             power_zero_sound.play();
         }
+
+        if (power_zero_timer < (60 * 18)) {
+            // Draw freddy going in and out
+            // Play Toreador's March
+            if (toreador_sound_playing == false) {
+                toreador_sound_playing = true;
+                toreador_sound.play();
+            }
+        }
+        if (power_zero_timer <= 0) {
+            player_alive = false;
+            night_lose = true;
+            freddy_jumpscare = true;
+        }
+        power_zero_timer -= 1;
     }
 
     // Have Left Door update while lightsOn is true
@@ -477,7 +497,7 @@ void Main_Game_Window::Update() {
                     chica_sound_playing = false;
                 }
             }
-            if (entered_office == false) {
+            if (entered_office == false && toreador_sound_playing == false) {
                 // Bonnie
                 std::uniform_int_distribution<int> uid(1,20);
                 int random_move_value_bonnie = uid(rng);
@@ -704,6 +724,19 @@ void Main_Game_Window::Draw() {
         dark_overlay_sprite.setPosition(sf::Vector2f(0, 100));
         dark_overlay_sprite.setColor(sf::Color(0,0,0,128));
         game_window.draw(dark_overlay_sprite);
+
+        // Freddy for Toreador's March
+        if (power_zero_timer < (60 * 18) && power_zero_timer > (60 * 2)) {
+            sf::Texture freddy_face_texture;
+            sf::Sprite freddy_face_sprite;
+            freddy_face_texture.loadFromFile("src/graphics/Freddy_Face.png");
+            freddy_face_sprite.setTexture(freddy_face_texture);
+            freddy_face_sprite.setScale(sf::Vector2f(0.7, 0.7));
+            freddy_face_sprite.setPosition(sf::Vector2f(97.f, 275.f));
+            if ((power_zero_timer / 30) % 2 == 1) {
+                game_window.draw(freddy_face_sprite);
+            }
+        }
     }
 
     // Always on Screen
@@ -791,6 +824,7 @@ void Main_Game_Window::nightWinStopSounds() {
     leaving_door_sound.stop();
     foxy_bgm_sound.stop();
     foxy_running_sound.stop();
+    toreador_sound.stop();
 }
 
 void Main_Game_Window::Run() {
@@ -902,6 +936,32 @@ void Main_Game_Window::Run() {
                     chica_jumpscare_sprite.setTexture(chica_jumpscare_texture);
                     chica_jumpscare_sprite.setPosition(100, 75);
                     game_window.draw(chica_jumpscare_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                }
+            }
+            if (freddy_jumpscare) {
+                sf::Texture freddy_jumpscare_texture;
+                sf::Sprite freddy_jumpscare_sprite;
+                freddy_jumpscare_texture.loadFromFile("src/graphics/Freddy_Jumpscare_Frame_2.png");
+                freddy_jumpscare_sprite.setTexture(freddy_jumpscare_texture);
+                freddy_jumpscare_sprite.setPosition(50, 75);
+
+                sound_effect.setBuffer(jumpscare_sound_buffer);
+                sound_effect.play();
+
+                // Loop frames
+                for (int i = 0; i < 5; i++) {
+                    game_window.clear();
+                    freddy_jumpscare_texture.loadFromFile("src/graphics/Freddy_Jumpscare_Frame_1.png");
+                    freddy_jumpscare_sprite.setTexture(freddy_jumpscare_texture);
+                    game_window.draw(freddy_jumpscare_sprite);
+                    game_window.display();
+                    sf::sleep(sf::seconds(0.25f));
+                    game_window.clear();
+                    freddy_jumpscare_texture.loadFromFile("src/graphics/Freddy_Jumpscare_Frame_2.png");
+                    freddy_jumpscare_sprite.setTexture(freddy_jumpscare_texture);
+                    game_window.draw(freddy_jumpscare_sprite);
                     game_window.display();
                     sf::sleep(sf::seconds(0.25f));
                 }

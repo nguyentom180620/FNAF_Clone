@@ -54,6 +54,7 @@ class Main_Game_Window {
     bool foxy_jumpscare;
     bool foxy_running;
     bool chica_jumpscare;
+    bool freddy_jumpscare;
     int game_time;
     int frame_counter_60;
 
@@ -118,6 +119,7 @@ class Main_Game_Window {
     sf::SoundBuffer power_zero_buffer;
     sf::Sound power_zero_sound;
     bool power_zero_playing;
+    int power_zero_timer;
 
     sf::SoundBuffer win_6_am_buffer;
     sf::Sound win_6_am_sound;
@@ -134,6 +136,10 @@ class Main_Game_Window {
     sf::SoundBuffer foxy_running_sound_buffer;
     sf::Sound foxy_running_sound;
     bool foxy_running_sound_playing;
+
+    sf::SoundBuffer toreador_sound_buffer;
+    sf::Sound toreador_sound;
+    bool toreador_sound_playing;
 
     void Update();
     void Draw();
