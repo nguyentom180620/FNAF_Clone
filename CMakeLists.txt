@@ -41,6 +41,8 @@ add_executable(main src/main.cpp
         src/animatronics/Chica/Chica.cpp
         src/animatronics/Chica/Chica.h
         src/graphics/Chica_Graphic.h
+        src/animatronics/Freddy/Freddy.cpp
+        src/animatronics/Freddy/Freddy.h
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio)
 target_compile_features(main PRIVATE cxx_std_17)

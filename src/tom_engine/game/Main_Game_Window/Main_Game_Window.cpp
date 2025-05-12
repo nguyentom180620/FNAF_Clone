@@ -2,19 +2,21 @@
 #include <iostream>
 #define FONT_SIZE 35
 
-Main_Game_Window::Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level): night_1(rng),
-bonnie(bonnie_level), foxy(foxy_level), chica(chica_level) {
+Main_Game_Window::Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level, int freddy_level): night_1(rng),
+bonnie(bonnie_level), foxy(foxy_level), chica(chica_level), freddy(freddy_level) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
     night_1.addFoxy(foxy);
     night_1.addAnimatronic(chica);
+    night_1.addAnimatronic(freddy);
     move_count = 0;
     bonnie_jumpscare_counter = 0;
     foxy_jumpscare_counter = 0;
     number_of_foxy_hits = 0;
     foxy_running = false;
     chica_jumpscare_counter = 0;
+    freddy_jumpscare_counter = 0;
     battery_power = 1000;
     passive_battery_drain_interval = 1000;
     battery_display_value = battery_power / 10;
@@ -170,12 +172,10 @@ void Main_Game_Window::Update() {
             if (leftdoorClosed == true) {
                 close_door_sound.setBuffer(close_door_sound_buffer);
                 close_door_sound.play();
-                std::cout << "You closed the door!" << std::endl;
             }
             else {
                 open_door_sound.setBuffer(open_door_sound_buffer);
                 open_door_sound.play();
-                std::cout << "You opened the door!" << std::endl;
             }
             left_door.openCloseDoor(getleftdoorClosed(), getleftLightsOn());
             left_door_open_close_clicked_on = false;
@@ -189,12 +189,10 @@ void Main_Game_Window::Update() {
             if (rightdoorClosed == true) {
                 close_door_sound.setBuffer(close_door_sound_buffer);
                 close_door_sound.play();
-                std::cout << "You closed the door!" << std::endl;
             }
             else {
                 open_door_sound.setBuffer(open_door_sound_buffer);
                 open_door_sound.play();
-                std::cout << "You opened the door!" << std::endl;
             }
             right_door.openCloseDoor(getrightdoorClosed(), getrightLightsOn());
             right_door_open_close_clicked_on = false;
@@ -240,7 +238,7 @@ void Main_Game_Window::Update() {
         }
 
         if (power_zero_timer < (60 * 18)) {
-            // Draw freddy going in and out
+            // Draw freddy going in and out (In draw function)
             // Play Toreador's March
             if (toreador_sound_playing == false) {
                 toreador_sound_playing = true;
@@ -259,7 +257,7 @@ void Main_Game_Window::Update() {
     if (leftlightsOn) {
         left_door.lightButtonOn();
         if (leftdoorClosed == false) {
-            // // If Bonnie is at the door,
+            // // If Bonnie is at the door, play his sound and draw him at door
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
                 if (cam_mode == false && bonnie_sound_playing == false) {
                     bonnie_sound_playing = true;
@@ -431,6 +429,15 @@ void Main_Game_Window::Update() {
                 }
                 chica_jumpscare_counter++;
             }
+            if (night_1.animatronicInOfficeName() == "Freddy") {
+                if (freddy_jumpscare_counter >= 3) {
+                    std::cout << "Freddy Jumpscare!" << std::endl;
+                    player_alive = false;
+                    night_lose = true;
+                    freddy_jumpscare = true;
+                }
+                freddy_jumpscare_counter++;
+            }
         }
         if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
             if (foxy.getStage() == 4) {
@@ -497,6 +504,14 @@ void Main_Game_Window::Update() {
                     chica_sound_playing = false;
                 }
             }
+            if (night_1.findAnimatronicCamName(freddy) == "Cam 4B") {
+                if (!(cam_mode == true && active_cam == "Cam 4B")) {
+                    if (getrightdoorClosed() == false) {
+                        night_1.enterOffice(freddy);
+                        entered_office = true;
+                    }
+                }
+            }
             if (entered_office == false && toreador_sound_playing == false) {
                 // Bonnie
                 std::uniform_int_distribution<int> uid(1,20);
@@ -525,6 +540,27 @@ void Main_Game_Window::Update() {
                     night_1.moveAnimatronic(chica);
                 }
                 night_1.findAnimatronic(chica);
+
+                // Freddy
+                if (!(cam_mode == true && night_1.findAnimatronicCamName(freddy) == active_cam)) {
+                    int random_move_value_freddy = uid(rng);
+                    if (freddy.getLevel() >= random_move_value_freddy) {
+                        if (freddy.getMovingSongNumber() == 1) {
+                            freddy_moving_sound_buffer.loadFromFile("src/sound/Freddy_Moving_1.wav");
+                            freddy_moving_sound.setBuffer(freddy_moving_sound_buffer);
+                            freddy_moving_sound.play();
+                            freddy.setMovingSongNumber(2);
+                        }
+                        else if (freddy.getMovingSongNumber() == 2) {
+                            freddy_moving_sound_buffer.loadFromFile("src/sound/Freddy_Moving_2.wav");
+                            freddy_moving_sound.setBuffer(freddy_moving_sound_buffer);
+                            freddy_moving_sound.play();
+                            freddy.setMovingSongNumber(1);
+                        }
+                        night_1.moveAnimatronic(freddy);
+                    }
+                }
+                night_1.findAnimatronic(freddy);
             }
             move_count = 0;
         }
@@ -626,7 +662,7 @@ void Main_Game_Window::Draw() {
         Map::Cam current_camera = night_1.getMap().accessCam(current_cam_name);
         std::vector<std::string> animatronic_names = current_camera.getAnimatronicNames();
 
-        // Print Bonnie on screen if Bonnie is on current cam
+        // Draw Bonnie on screen if Bonnie is on current cam
         if (std::find(animatronic_names.begin(), animatronic_names.end(), "Bonnie")
             != animatronic_names.end()) {
             sf::Texture bonnie_texture;
@@ -662,7 +698,7 @@ void Main_Game_Window::Draw() {
             }
         }
 
-        // Print Bonnie on screen if Bonnie is on current cam
+        // Draw Chica on screen if Chica is on current cam
         if (std::find(animatronic_names.begin(), animatronic_names.end(), "Chica")
             != animatronic_names.end()) {
             sf::Texture chica_texture;
@@ -694,6 +730,40 @@ void Main_Game_Window::Draw() {
                 chica_sprite.setScale(sf::Vector2f(0.7, 0.7));
             }
             game_window.draw(chica_sprite);
+        }
+
+        // Draw Freddy on screen if Freddy is on current cam
+        if (std::find(animatronic_names.begin(), animatronic_names.end(), "Freddy")
+            != animatronic_names.end()) {
+            sf::Texture freddy_texture;
+            sf::Sprite freddy_sprite;
+            freddy_texture.loadFromFile("src/graphics/Freddy_On_Cam.png");
+            freddy_sprite.setTexture(freddy_texture);
+            if (current_cam_name == "Cam 1A") {
+                freddy_sprite.setPosition(sf::Vector2f(150, 325));
+                freddy_sprite.setScale(sf::Vector2f(0.6, 0.6));
+            }
+            else if (current_cam_name == "Cam 1B") {
+                freddy_sprite.setPosition(sf::Vector2f(250, 130));
+                freddy_sprite.setScale(sf::Vector2f(0.25, 0.25));
+            }
+            else if (current_cam_name == "Cam 4A") {
+                freddy_sprite.setPosition(sf::Vector2f(100, 225));
+                freddy_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else if (current_cam_name == "Cam 4B") {
+                freddy_sprite.setPosition(sf::Vector2f(125, 300));
+                freddy_sprite.setScale(sf::Vector2f(1, 1));
+            }
+            else if (current_cam_name == "Cam 6") {
+                freddy_sprite.setPosition(sf::Vector2f(25, 100));
+                freddy_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else if (current_cam_name == "Cam 7") {
+                freddy_sprite.setPosition(sf::Vector2f(25, 100));
+                freddy_sprite.setScale(sf::Vector2f(0.7, 0.7));
+            }
+            game_window.draw(freddy_sprite);
         }
 
     }

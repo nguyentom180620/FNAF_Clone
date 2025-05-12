@@ -16,12 +16,14 @@ class Main_Game_Window {
     Bonnie bonnie;
     Foxy foxy;
     Chica chica;
+    Freddy freddy;
 
     int move_count;
     int bonnie_jumpscare_counter;
     int foxy_jumpscare_counter;
     int number_of_foxy_hits;
     int chica_jumpscare_counter;
+    int freddy_jumpscare_counter;
 
     int battery_power;
     std::string battery_display_value;
@@ -141,10 +143,13 @@ class Main_Game_Window {
     sf::Sound toreador_sound;
     bool toreador_sound_playing;
 
+    sf::SoundBuffer freddy_moving_sound_buffer;
+    sf::Sound freddy_moving_sound;
+
     void Update();
     void Draw();
 public:
-    Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level);
+    Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level, int freddy_level);
     ~Main_Game_Window();
     const bool getleftdoorClosed();
     void setleftdoorClosed(bool newBool);

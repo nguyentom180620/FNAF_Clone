@@ -4,6 +4,7 @@
 #include "../../animatronics/Bonnie/Bonnie.h"
 #include "../../animatronics/Foxy/Foxy.h"
 #include "../../animatronics/Chica/Chica.h"
+#include "../../animatronics/Freddy/Freddy.h"
 
 // Number of seconds in a night (8 mins and 55 seconds)
 constexpr unsigned int GAME_LENGTH = 535;
