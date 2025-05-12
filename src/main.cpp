@@ -6,12 +6,12 @@
 static std::random_device rd;
 static std::mt19937 rng{rd()};
 
-/* Right Door functions added!
- * Now add Chica
+/* Added most of Chica
+ * Next is adding Chica's jumpscare and updating 6 A.M. Screen
 */
 
 int main() {
-    Main_Game_Window main_game_window(rng, 0, 0);
+    Main_Game_Window main_game_window(rng, 0, 0, 20);
     main_game_window.Run();
 
     return 0;

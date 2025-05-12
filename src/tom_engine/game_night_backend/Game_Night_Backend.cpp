@@ -236,3 +236,7 @@ bool Game_Night_Backend::animatronicAtDoorCheck(Base_Animatronic &base, std::str
 bool Game_Night_Backend::animatronicInOffice() {
     return office ? true : false;
 }
+
+std::string Game_Night_Backend::animatronicInOfficeName() {
+    return office->getName();
+}

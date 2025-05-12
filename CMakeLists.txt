@@ -38,6 +38,9 @@ add_executable(main src/main.cpp
         src/graphics/Right_Door_Graphic.h
         src/tom_engine/components/sprites/Right_Door.cpp
         src/tom_engine/components/sprites/Right_Door.h
+        src/animatronics/Chica/Chica.cpp
+        src/animatronics/Chica/Chica.h
+        src/graphics/Chica_Graphic.h
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio)
 target_compile_features(main PRIVATE cxx_std_17)

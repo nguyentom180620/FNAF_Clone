@@ -15,11 +15,13 @@ class Main_Game_Window {
     Game_Night_Backend night_1;
     Bonnie bonnie;
     Foxy foxy;
+    Chica chica;
 
     int move_count;
     int bonnie_jumpscare_counter;
     int foxy_jumpscare_counter;
     int number_of_foxy_hits;
+    int chica_jumpscare_counter;
 
     int battery_power;
     std::string battery_display_value;
@@ -51,6 +53,7 @@ class Main_Game_Window {
     bool bonnie_jumpscare;
     bool foxy_jumpscare;
     bool foxy_running;
+    bool chica_jumpscare;
     int game_time;
     int frame_counter_60;
 
@@ -104,9 +107,13 @@ class Main_Game_Window {
     bool lights_on_sound_playing;
     bool lights_off_sound_playing;
 
-    sf::SoundBuffer animatronic_at_door_sound_buffer;
-    sf::Sound animatronic_at_door_sound;
-    bool animatronic_sound_playing;
+    sf::SoundBuffer bonnie_at_door_sound_buffer;
+    sf::Sound bonnie_at_door_sound;
+    bool bonnie_sound_playing;
+
+    sf::SoundBuffer chica_at_door_sound_buffer;
+    sf::Sound chica_at_door_sound;
+    bool chica_sound_playing;
 
     sf::SoundBuffer power_zero_buffer;
     sf::Sound power_zero_sound;
@@ -129,7 +136,7 @@ class Main_Game_Window {
     void Update();
     void Draw();
 public:
-    Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level);
+    Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level);
     ~Main_Game_Window();
     const bool getleftdoorClosed();
     void setleftdoorClosed(bool newBool);

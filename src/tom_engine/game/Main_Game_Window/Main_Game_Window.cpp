@@ -2,17 +2,19 @@
 #include <iostream>
 #define FONT_SIZE 35
 
-Main_Game_Window::Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level): night_1(rng),
-bonnie(bonnie_level), foxy(foxy_level) {
+Main_Game_Window::Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level): night_1(rng),
+bonnie(bonnie_level), foxy(foxy_level), chica(chica_level) {
     this->rng = rng;
 
     night_1.addAnimatronic(bonnie);
     night_1.addFoxy(foxy);
+    night_1.addAnimatronic(chica);
     move_count = 0;
     bonnie_jumpscare_counter = 0;
     foxy_jumpscare_counter = 0;
     number_of_foxy_hits = 0;
     foxy_running = false;
+    chica_jumpscare_counter = 0;
     battery_power = 1000;
     passive_battery_drain_interval = 1000;
     battery_display_value = battery_power / 10;
@@ -23,6 +25,7 @@ bonnie(bonnie_level), foxy(foxy_level) {
     player_alive = true;
     bonnie_jumpscare = false;
     foxy_jumpscare = false;
+    chica_jumpscare = false;
     game_time = 0;
     frame_counter_60 = 0;
 
@@ -109,8 +112,10 @@ bonnie(bonnie_level), foxy(foxy_level) {
     lights_off_sound_buffer.loadFromFile("src/sound/Light_Off.wav");
     lights_on_sound_playing = false;
     lights_off_sound_playing = false;
-    animatronic_at_door_sound_buffer.loadFromFile("src/sound/Ani_At_door.wav");
-    animatronic_sound_playing = false;
+    bonnie_at_door_sound_buffer.loadFromFile("src/sound/Ani_At_door.wav");
+    bonnie_sound_playing = false;
+    chica_at_door_sound_buffer.loadFromFile("src/sound/Ani_At_door.wav");
+    chica_sound_playing = false;
     power_zero_buffer.loadFromFile("src/sound/power_zero.wav");
     power_zero_playing = false;
     win_6_am_buffer.loadFromFile("src/sound/Win_6_AM.wav");
@@ -187,7 +192,7 @@ void Main_Game_Window::Update() {
             right_door.openCloseDoor(getrightdoorClosed(), getrightLightsOn());
             right_door_open_close_clicked_on = false;
             // Reset Animatronic Sprite
-            // Will be Chica sprite looking like bonnie.resetSprite();
+            chica.resetSprite();
         }
 
         // Update Left Door Light
@@ -234,17 +239,17 @@ void Main_Game_Window::Update() {
         if (leftdoorClosed == false) {
             // // If Bonnie is at the door,
             if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
-                if (cam_mode == false && animatronic_sound_playing == false) {
-                    animatronic_sound_playing = true;
-                    animatronic_at_door_sound.setBuffer(animatronic_at_door_sound_buffer);
-                    animatronic_at_door_sound.play();
+                if (cam_mode == false && bonnie_sound_playing == false) {
+                    bonnie_sound_playing = true;
+                    bonnie_at_door_sound.setBuffer(bonnie_at_door_sound_buffer);
+                    bonnie_at_door_sound.play();
                 }
                 bonnie.loadAtLeftDoorSprite();
                 left_door.doorLightOff();
             }
             else {
                 // Reset Animatronic Sprites
-                animatronic_sound_playing = false;
+                bonnie_sound_playing = false;
                 bonnie.resetSprite();
                 left_door.doorLightOn();
             }
@@ -263,21 +268,21 @@ void Main_Game_Window::Update() {
         right_door.lightButtonOn();
         if (rightdoorClosed == false) {
             // If Chica is at the door, use bonnie left door behavior as model
-            // if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
-            //     if (cam_mode == false && animatronic_sound_playing == false) {
-            //         animatronic_sound_playing = true;
-            //         animatronic_at_door_sound.setBuffer(animatronic_at_door_sound_buffer);
-            //         animatronic_at_door_sound.play();
-            //     }
-            //     bonnie.loadAtLeftDoorSprite();
-            //     left_door.doorLightOff();
-            // }
-            // else {
-            //     // Reset Animatronic Sprites
-            //     animatronic_sound_playing = false;
-            //     bonnie.resetSprite();
+            if (night_1.animatronicAtDoorCheck(chica, "Right Door")) {
+                if (cam_mode == false && chica_sound_playing == false) {
+                    chica_sound_playing = true;
+                    chica_at_door_sound.setBuffer(chica_at_door_sound_buffer);
+                    chica_at_door_sound.play();
+                }
+                chica.loadAtRightDoorSprite();
+                right_door.doorLightOff();
+            }
+            else {
+                // Reset Animatronic Sprites
+                chica_sound_playing = false;
+                chica.resetSprite();
                 right_door.doorLightOn();
-            // }
+            }
         }
     }
     else {
@@ -285,7 +290,7 @@ void Main_Game_Window::Update() {
             right_door.doorLightOff();
         }
         right_door.lightButtonOff();
-        // bonnie.resetSprite();
+        chica.resetSprite();
     }
 
     // Update array every frame to get faster feedback on usage bar
@@ -349,7 +354,7 @@ void Main_Game_Window::Update() {
     }
 
     // Timer engine
-    // Manages Bonnie, Foxy, and Battery
+    // Manages Bonnie, Foxy, Chica, and Battery
     ++frame_counter_60;
     if (frame_counter_60 >= 60) {
         if (game_time >= GAME_LENGTH) {
@@ -386,13 +391,24 @@ void Main_Game_Window::Update() {
             default: break;
         }
         if (night_1.animatronicInOffice()) {
-            if (bonnie_jumpscare_counter >= 3) {
-                std::cout << "Bonnie Jumpscare!" << std::endl;
-                player_alive = false;
-                night_lose = true;
-                bonnie_jumpscare = true;
+            if (night_1.animatronicInOfficeName() == "Bonnie") {
+                if (bonnie_jumpscare_counter >= 3) {
+                    std::cout << "Bonnie Jumpscare!" << std::endl;
+                    player_alive = false;
+                    night_lose = true;
+                    bonnie_jumpscare = true;
+                }
+                bonnie_jumpscare_counter++;
             }
-            bonnie_jumpscare_counter++;
+            if (night_1.animatronicInOfficeName() == "Chica") {
+                if (chica_jumpscare_counter >= 3) {
+                    std::cout << "Chica Jumpscare!" << std::endl;
+                    player_alive = false;
+                    night_lose = true;
+                    chica_jumpscare = true;
+                }
+                chica_jumpscare_counter++;
+            }
         }
         if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
             if (foxy.getStage() == 4) {
@@ -426,7 +442,7 @@ void Main_Game_Window::Update() {
                     number_of_foxy_hits += 1;
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
-                    animatronic_sound_playing = false;
+                    bonnie_sound_playing = false;
                     night_1.moveAnimatronic(foxy);
                     foxy_jumpscare_counter = 0;
                     foxy.resetStage();
@@ -445,7 +461,18 @@ void Main_Game_Window::Update() {
                 else {
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
-                    animatronic_sound_playing = false;
+                    bonnie_sound_playing = false;
+                }
+            }
+            if (night_1.animatronicAtDoorCheck(chica, "Right Door")) {
+                if (getrightdoorClosed() == false) {
+                    night_1.enterOffice(chica);
+                    entered_office = true;
+                }
+                else {
+                    leaving_door_sound.setBuffer(leaving_door_sound_buffer);
+                    leaving_door_sound.play();
+                    chica_sound_playing = false;
                 }
             }
             if (entered_office == false) {
@@ -469,6 +496,13 @@ void Main_Game_Window::Update() {
                     }
                 }
                 night_1.findAnimatronic(foxy);
+
+                // Chica
+                int random_move_value_chica = uid(rng);
+                if (chica.getLevel() >= random_move_value_chica) {
+                    night_1.moveAnimatronic(chica);
+                }
+                night_1.findAnimatronic(chica);
             }
             move_count = 0;
         }
@@ -606,6 +640,40 @@ void Main_Game_Window::Draw() {
             }
         }
 
+        // Print Bonnie on screen if Bonnie is on current cam
+        if (std::find(animatronic_names.begin(), animatronic_names.end(), "Chica")
+            != animatronic_names.end()) {
+            sf::Texture chica_texture;
+            sf::Sprite chica_sprite;
+            chica_texture.loadFromFile("src/graphics/Chica_On_Cam.png");
+            chica_sprite.setTexture(chica_texture);
+            if (current_cam_name == "Cam 1A") {
+                chica_sprite.setPosition(sf::Vector2f(250, 300));
+                chica_sprite.setScale(sf::Vector2f(1, 1));
+            }
+            else if (current_cam_name == "Cam 1B") {
+                chica_sprite.setPosition(sf::Vector2f(300, 375));
+                chica_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else if (current_cam_name == "Cam 4A") {
+                chica_sprite.setPosition(sf::Vector2f(100, 225));
+                chica_sprite.setScale(sf::Vector2f(0.5, 0.5));
+            }
+            else if (current_cam_name == "Cam 4B") {
+                chica_sprite.setPosition(sf::Vector2f(125, 300));
+                chica_sprite.setScale(sf::Vector2f(0.9, 0.9));
+            }
+            else if (current_cam_name == "Cam 6") {
+                chica_sprite.setPosition(sf::Vector2f(200, 400));
+                chica_sprite.setScale(sf::Vector2f(0.7, 0.7));
+            }
+            else if (current_cam_name == "Cam 7") {
+                chica_sprite.setPosition(sf::Vector2f(150, 500));
+                chica_sprite.setScale(sf::Vector2f(0.7, 0.7));
+            }
+            game_window.draw(chica_sprite);
+        }
+
     }
     if (cam_mode == false) {
         game_window.draw(left_door.getSprite());
@@ -620,6 +688,7 @@ void Main_Game_Window::Draw() {
         game_window.draw(right_door.getLightButtonCaption());
         game_window.draw(Office_Background_sprite);
         game_window.draw(bonnie.getSprite());
+        game_window.draw(chica.getSprite());
         game_window.draw(freddy_noseSprite);
     }
 
@@ -882,7 +951,7 @@ void Main_Game_Window::Run() {
                                 right_door.doorLightOff();
                             }
                             // Reset Animatronic Sprites
-                            // bonnie.resetSprite();
+                            chica.resetSprite();
                         }
                     }
                 }
@@ -890,20 +959,5 @@ void Main_Game_Window::Run() {
         }
         Update();
         Draw();
-    }
-    // // print section to test changes to the game state variables
-    std::cout << std::endl;
-    std::cout << "Move Counter: " << move_count << std::endl;
-    std::cout << "Bonnie Jumpscare Counter: " << bonnie_jumpscare_counter << std::endl;
-    std::cout << "Entered Office: " << std::boolalpha << entered_office << std::endl;
-    std::cout << "Player Alive: " << std::boolalpha << player_alive << std::endl;
-    std::cout << "Game Time (in seconds): " << game_time << std::endl;
-    std::cout << std::endl;
-
-    if (player_alive) {
-        std::cout << "6:00 AM! You lived!" << std::endl;
-    }
-    else {
-        std::cout << "You died..." << std::endl;
     }
 }

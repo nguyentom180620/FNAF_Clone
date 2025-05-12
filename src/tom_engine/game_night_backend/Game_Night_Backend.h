@@ -3,6 +3,7 @@
 #include "../../map/Map.h"
 #include "../../animatronics/Bonnie/Bonnie.h"
 #include "../../animatronics/Foxy/Foxy.h"
+#include "../../animatronics/Chica/Chica.h"
 
 // Number of seconds in a night (8 mins and 55 seconds)
 constexpr unsigned int GAME_LENGTH = 535;
@@ -28,4 +29,5 @@ public:
     std::string findAnimatronicCamName(Base_Animatronic& base);
     bool animatronicAtDoorCheck(Base_Animatronic& base, std::string doorName);
     bool animatronicInOffice();
+    std::string animatronicInOfficeName();
 };
