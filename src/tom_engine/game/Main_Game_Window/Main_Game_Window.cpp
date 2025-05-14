@@ -139,10 +139,12 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level), freddy(freddy_level)
     toreador_sound_playing = false;
 
     game_window.close();
-    game_window.create(sf::VideoMode(1000, 900), "FNAF Clone", sf::Style::Close);
+    game_window.create(sf::VideoMode(1000, 900), "FNASCII", sf::Style::Close);
     game_window.setFramerateLimit(60);
     auto mouse_pos = sf::Mouse::getPosition(game_window);
     translated_mouse_pos = game_window.mapPixelToCoords(mouse_pos);
+    icon.loadFromFile("src/graphics/Freddy_Face.png");
+    game_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 }
 
 Main_Game_Window::~Main_Game_Window() {}

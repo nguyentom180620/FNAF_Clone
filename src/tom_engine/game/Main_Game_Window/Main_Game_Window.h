@@ -11,6 +11,7 @@
 #include "../../components/sprites/Camera_System.h"
 class Main_Game_Window {
     std::mt19937 rng;
+    sf::Image icon;
 
     Game_Night_Backend night_1;
     Bonnie bonnie;
