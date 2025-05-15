@@ -13,7 +13,9 @@ class Main_Game_Window {
     std::mt19937 rng;
     sf::Image icon;
 
-    Game_Night_Backend night_1;
+    Game_Night_Backend night;
+    int night_number;
+
     Bonnie bonnie;
     Foxy foxy;
     Chica chica;
@@ -150,7 +152,7 @@ class Main_Game_Window {
     void Update();
     void Draw();
 public:
-    Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level, int freddy_level);
+    Main_Game_Window(std::mt19937& rng, int night_number, int bonnie_level, int foxy_level, int chica_level, int freddy_level);
     ~Main_Game_Window();
     const bool getleftdoorClosed();
     void setleftdoorClosed(bool newBool);
@@ -161,5 +163,5 @@ public:
     const bool getrightLightsOn();
     void setrightLightsOn(bool newBool);
     void nightWinStopSounds();
-    void Run();
+    bool Run();
 };

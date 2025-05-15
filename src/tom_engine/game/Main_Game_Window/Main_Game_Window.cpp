@@ -2,14 +2,15 @@
 #include <iostream>
 #define FONT_SIZE 35
 
-Main_Game_Window::Main_Game_Window(std::mt19937& rng, int bonnie_level, int foxy_level, int chica_level, int freddy_level): night_1(rng),
+Main_Game_Window::Main_Game_Window(std::mt19937& rng, int night_number, int bonnie_level, int foxy_level, int chica_level, int freddy_level): night(rng),
 bonnie(bonnie_level), foxy(foxy_level), chica(chica_level), freddy(freddy_level) {
     this->rng = rng;
+    this->night_number = night_number;
 
-    night_1.addAnimatronic(bonnie);
-    night_1.addFoxy(foxy);
-    night_1.addAnimatronic(chica);
-    night_1.addAnimatronic(freddy);
+    night.addAnimatronic(bonnie);
+    night.addFoxy(foxy);
+    night.addAnimatronic(chica);
+    night.addAnimatronic(freddy);
     move_count = 0;
     bonnie_jumpscare_counter = 0;
     foxy_jumpscare_counter = 0;
@@ -29,7 +30,7 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level), freddy(freddy_level)
     foxy_jumpscare = false;
     chica_jumpscare = false;
     freddy_jumpscare = false;
-    game_time = 0;
+    game_time = 533;
     game_win_timer = 60 * 10;
     power_zero_timer = 60 * 22;
     frame_counter_60 = 0;
@@ -84,7 +85,7 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level), freddy(freddy_level)
 
     clock_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
     clock_text.setFont(clock_font);
-    clock_text.setString("12 AM, Night 1");
+    clock_text.setString("12 AM, Night " + std::to_string(night_number));
     clock_text.setCharacterSize(FONT_SIZE);
     clock_text.setFillColor(sf::Color::White);
     clock_text.setPosition(sf::Vector2f(700, 25));
@@ -260,7 +261,7 @@ void Main_Game_Window::Update() {
         left_door.lightButtonOn();
         if (leftdoorClosed == false) {
             // // If Bonnie is at the door, play his sound and draw him at door
-            if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
+            if (night.animatronicAtDoorCheck(bonnie, "Left Door")) {
                 if (cam_mode == false && bonnie_sound_playing == false) {
                     bonnie_sound_playing = true;
                     bonnie_at_door_sound.setBuffer(bonnie_at_door_sound_buffer);
@@ -290,7 +291,7 @@ void Main_Game_Window::Update() {
         right_door.lightButtonOn();
         if (rightdoorClosed == false) {
             // If Chica is at the door, use bonnie left door behavior as model
-            if (night_1.animatronicAtDoorCheck(chica, "Right Door")) {
+            if (night.animatronicAtDoorCheck(chica, "Right Door")) {
                 if (cam_mode == false && chica_sound_playing == false) {
                     chica_sound_playing = true;
                     chica_at_door_sound.setBuffer(chica_at_door_sound_buffer);
@@ -387,33 +388,33 @@ void Main_Game_Window::Update() {
                 std::cout << "12 AM" << std::endl;
             break;
             case 90:
-                clock_text.setString("1 AM, Night 1");
+                clock_text.setString("1 AM, Night " + std::to_string(night_number));
                 std::cout << "1 AM" << std::endl;
             break;
             case 179:
-                clock_text.setString("2 AM, Night 1");
+                clock_text.setString("2 AM, Night " + std::to_string(night_number));
                 std::cout << "2 AM" << std::endl;
             break;
             case 268:
-                clock_text.setString("3 AM, Night 1");
+                clock_text.setString("3 AM, Night " + std::to_string(night_number));
                 std::cout << "3 AM" << std::endl;
             break;
             case 357:
-                clock_text.setString("4 AM, Night 1");
+                clock_text.setString("4 AM, Night " + std::to_string(night_number));
                 std::cout << "4 AM" << std::endl;
             break;
             case 446:
-                clock_text.setString("5 AM, Night 1");
+                clock_text.setString("5 AM, Night " + std::to_string(night_number));
                 std::cout << "5 AM" << std::endl;
             break;
             case GAME_LENGTH:
-                clock_text.setString("6 AM, Night 1");
+                clock_text.setString("6 AM, Night " + std::to_string(night_number));
                 std::cout << "6 AM" << std::endl;
             break;
             default: break;
         }
-        if (night_1.animatronicInOffice()) {
-            if (night_1.animatronicInOfficeName() == "Bonnie") {
+        if (night.animatronicInOffice() && battery_power > 0) {
+            if (night.animatronicInOfficeName() == "Bonnie") {
                 if (bonnie_jumpscare_counter >= 3) {
                     std::cout << "Bonnie Jumpscare!" << std::endl;
                     player_alive = false;
@@ -422,7 +423,7 @@ void Main_Game_Window::Update() {
                 }
                 bonnie_jumpscare_counter++;
             }
-            if (night_1.animatronicInOfficeName() == "Chica") {
+            if (night.animatronicInOfficeName() == "Chica") {
                 if (chica_jumpscare_counter >= 3) {
                     std::cout << "Chica Jumpscare!" << std::endl;
                     player_alive = false;
@@ -431,7 +432,7 @@ void Main_Game_Window::Update() {
                 }
                 chica_jumpscare_counter++;
             }
-            if (night_1.animatronicInOfficeName() == "Freddy") {
+            if (night.animatronicInOfficeName() == "Freddy") {
                 if (freddy_jumpscare_counter >= 3) {
                     std::cout << "Freddy Jumpscare!" << std::endl;
                     player_alive = false;
@@ -441,12 +442,12 @@ void Main_Game_Window::Update() {
                 freddy_jumpscare_counter++;
             }
         }
-        if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
+        if (night.findAnimatronicCamName(foxy) == "Cam 1C") {
             if (foxy.getStage() == 4) {
-                night_1.moveAnimatronic(foxy);
+                night.moveAnimatronic(foxy);
             }
         }
-        if (night_1.findAnimatronicCamName(foxy) == "Cam 2A") {
+        if (night.findAnimatronicCamName(foxy) == "Cam 2A") {
             if (active_cam == "Cam 2A") {
                 foxy_running = true;
             }
@@ -461,7 +462,7 @@ void Main_Game_Window::Update() {
             }
             if (foxy_jumpscare_counter >= 60) {
                 if (getleftdoorClosed() == false) {
-                    night_1.enterOffice(foxy);
+                    night.enterOffice(foxy);
                     entered_office = true;
                     player_alive = false;
                     night_lose = true;
@@ -474,7 +475,7 @@ void Main_Game_Window::Update() {
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
                     bonnie_sound_playing = false;
-                    night_1.moveAnimatronic(foxy);
+                    night.moveAnimatronic(foxy);
                     foxy_jumpscare_counter = 0;
                     foxy.resetStage();
                     foxy.resetFrame();
@@ -484,9 +485,9 @@ void Main_Game_Window::Update() {
             foxy_jumpscare_counter++;
         }
         if (move_count == 5) {
-            if (night_1.animatronicAtDoorCheck(bonnie, "Left Door")) {
+            if (night.animatronicAtDoorCheck(bonnie, "Left Door")) {
                 if (getleftdoorClosed() == false) {
-                    night_1.enterOffice(bonnie);
+                    night.enterOffice(bonnie);
                     entered_office = true;
                 }
                 else {
@@ -495,9 +496,9 @@ void Main_Game_Window::Update() {
                     bonnie_sound_playing = false;
                 }
             }
-            if (night_1.animatronicAtDoorCheck(chica, "Right Door")) {
+            if (night.animatronicAtDoorCheck(chica, "Right Door")) {
                 if (getrightdoorClosed() == false) {
-                    night_1.enterOffice(chica);
+                    night.enterOffice(chica);
                     entered_office = true;
                 }
                 else {
@@ -506,27 +507,27 @@ void Main_Game_Window::Update() {
                     chica_sound_playing = false;
                 }
             }
-            if (night_1.findAnimatronicCamName(freddy) == "Cam 4B") {
+            if (night.findAnimatronicCamName(freddy) == "Cam 4B") {
                 if (!(cam_mode == true && active_cam == "Cam 4B")) {
                     if (getrightdoorClosed() == false) {
-                        night_1.enterOffice(freddy);
+                        night.enterOffice(freddy);
                         entered_office = true;
                     }
                 }
             }
-            if (entered_office == false && toreador_sound_playing == false) {
+            if (entered_office == false && battery_power > 0) {
                 // Bonnie
                 std::uniform_int_distribution<int> uid(1,20);
                 int random_move_value_bonnie = uid(rng);
                 if (bonnie.getLevel() >= random_move_value_bonnie) {
-                    night_1.moveAnimatronic(bonnie);
+                    night.moveAnimatronic(bonnie);
                 }
-                night_1.findAnimatronic(bonnie);
+                night.findAnimatronic(bonnie);
 
                 // Foxy
                 int random_move_value_foxy = uid(rng);
                 if (foxy.getLevel() >= random_move_value_foxy) {
-                    if (night_1.findAnimatronicCamName(foxy) == "Cam 1C") {
+                    if (night.findAnimatronicCamName(foxy) == "Cam 1C") {
                         if (foxy.getStage() < 4) {
                             if (cam_mode == false) {
                                 foxy.incrementStage();
@@ -534,17 +535,17 @@ void Main_Game_Window::Update() {
                         }
                     }
                 }
-                night_1.findAnimatronic(foxy);
+                night.findAnimatronic(foxy);
 
                 // Chica
                 int random_move_value_chica = uid(rng);
                 if (chica.getLevel() >= random_move_value_chica) {
-                    night_1.moveAnimatronic(chica);
+                    night.moveAnimatronic(chica);
                 }
-                night_1.findAnimatronic(chica);
+                night.findAnimatronic(chica);
 
                 // Freddy
-                if (!(cam_mode == true && night_1.findAnimatronicCamName(freddy) == active_cam)) {
+                if (!(cam_mode == true && night.findAnimatronicCamName(freddy) == active_cam)) {
                     int random_move_value_freddy = uid(rng);
                     if (freddy.getLevel() >= random_move_value_freddy) {
                         if (freddy.getMovingSongNumber() == 1) {
@@ -559,10 +560,10 @@ void Main_Game_Window::Update() {
                             freddy_moving_sound.play();
                             freddy.setMovingSongNumber(1);
                         }
-                        night_1.moveAnimatronic(freddy);
+                        night.moveAnimatronic(freddy);
                     }
                 }
-                night_1.findAnimatronic(freddy);
+                night.findAnimatronic(freddy);
             }
             move_count = 0;
         }
@@ -632,7 +633,7 @@ void Main_Game_Window::Draw() {
         }
 
         // Drawing foxy on Cam 2A
-        if (active_cam == "Cam 2A" && foxy_running && night_1.findAnimatronicCamName(foxy) == "Cam 2A") {
+        if (active_cam == "Cam 2A" && foxy_running && night.findAnimatronicCamName(foxy) == "Cam 2A") {
             sf::Texture foxy_texture;
             sf::Sprite foxy_sprite;
             foxy_texture.loadFromFile("src/graphics/foxy.png");
@@ -661,7 +662,7 @@ void Main_Game_Window::Draw() {
 
         // This part draws the animatronics onto the scene
         const std::string current_cam_name = active_cam;
-        Map::Cam current_camera = night_1.getMap().accessCam(current_cam_name);
+        Map::Cam current_camera = night.getMap().accessCam(current_cam_name);
         std::vector<std::string> animatronic_names = current_camera.getAnimatronicNames();
 
         // Draw Bonnie on screen if Bonnie is on current cam
@@ -899,7 +900,7 @@ void Main_Game_Window::nightWinStopSounds() {
     toreador_sound.stop();
 }
 
-void Main_Game_Window::Run() {
+bool Main_Game_Window::Run() {
     while (game_window.isOpen()) {
         if (night_win == true) {
             nightWinStopSounds();
@@ -1047,10 +1048,12 @@ void Main_Game_Window::Run() {
         sf::Event event{};
         while (game_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
+                player_alive = false;
                 game_window.close();
             }
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape) {
+                    player_alive = false;
                     game_window.close();
                 }
             }
@@ -1165,4 +1168,5 @@ void Main_Game_Window::Run() {
             Draw();
         }
     }
+    return player_alive;
 }

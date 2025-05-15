@@ -1,3 +1,4 @@
+#include <fstream>
 #include "tom_engine/game/Main_Game_Window/Main_Game_Window.h"
 // Note: snake_case for variable names, camelCase for functions
 
@@ -17,6 +18,14 @@ class Home_Screen_Window {
 
     sf::Font text_font;
 
+    sf::Text title_text;
+    sf::RenderTexture title_render_texture;
+    sf::Sprite title_sprite;
+
+    sf::Texture stars_texture;
+    sf::Sprite stars_sprite;
+    int stars;
+
     sf::Text select_game_text;
     sf::RenderTexture select_game_render_texture;
     sf::Sprite select_game_sprite;
@@ -28,6 +37,11 @@ class Home_Screen_Window {
     sf::Text continue_game_text;
     sf::RenderTexture continue_game_render_texture;
     sf::Sprite continue_game_sprite;
+
+    sf::Text continue_night_number_text;
+    sf::RenderTexture continue_night_number_render_texture;
+    sf::Sprite continue_night_number_sprite;
+    int night_number;
 
     sf::Text sixth_night_game_text;
     sf::RenderTexture sixth_night_render_texture;
@@ -45,25 +59,213 @@ class Home_Screen_Window {
 
     std::string selected_night;
 public:
-    Home_Screen_Window();
+    Home_Screen_Window(int night_number, int stars);
     void Update();
     void Draw();
     std::string Run();
 };
 
 int main() {
-    Home_Screen_Window home_screen;
-    std::string selected_night = home_screen.Run();
+    bool quit = false;
 
-    std::cout << "Selected Night: " << selected_night << std::endl;
+    while (!quit) {
+        // Fstream to FNASCII Player Data
+        // First line is what night player will continue from (1-5)
+        // Second line is how many stars they earned (3 stars for 100%)
+        std::fstream fnascii_fstream("src/savefiles/fnascii_player_data.txt");
+        std::string night_to_continue;
+        getline(fnascii_fstream, night_to_continue);
+        std::cout << "Night to continue from: " << night_to_continue << std::endl;
 
-    Main_Game_Window main_game_window(rng, 20, 20, 20, 20);
-    main_game_window.Run();
+        std::string stars_earned;
+        getline(fnascii_fstream, stars_earned);
+        std::cout << "Stars earned: " << stars_earned << std::endl;
+
+        Home_Screen_Window home_screen(std::stoi(night_to_continue), std::stoi(stars_earned));
+        std::string selected_night = home_screen.Run();
+
+        std::cout << "Selected Night: " << selected_night << std::endl;
+
+        fnascii_fstream.close();
+
+        if (selected_night == "None") {
+            quit = true;
+        }
+        if (selected_night == "Start Game") {
+            fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                                std::fstream::out | std::fstream::trunc);
+            night_to_continue = "1";
+            fnascii_fstream << night_to_continue << std::endl << stars_earned;
+            fnascii_fstream.close();
+
+            // Continue the game until the player dies
+            // Update save each night
+
+            // Night 1
+            Main_Game_Window night_1(rng, 1, 3, 2, 2, 0);
+            bool player_alive = night_1.Run();
+
+            // Night 2
+            if (player_alive) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                                    std::fstream::out | std::fstream::trunc);
+                night_to_continue = "2";
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+
+                Main_Game_Window night_2(rng, 2, 6, 3, 3, 0);
+                player_alive = night_2.Run();
+            }
+
+            // Night 3
+            if (player_alive) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                                    std::fstream::out | std::fstream::trunc);
+                night_to_continue = "3";
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+
+                Main_Game_Window night_3(rng, 3, 3, 4, 7, 1);
+                player_alive = night_3.Run();
+            }
+
+            // Night 4
+            if (player_alive) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                    std::fstream::out | std::fstream::trunc);
+                night_to_continue = "4";
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+
+                Main_Game_Window night_4(rng, 4, 5, 8, 6, 2);
+                player_alive = night_4.Run();
+            }
+
+            // Night 5
+            if (player_alive) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                    std::fstream::out | std::fstream::trunc);
+                night_to_continue = "5";
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+
+                Main_Game_Window night_5(rng, 5, 8, 7, 9, 3);
+                player_alive = night_5.Run();
+            }
+
+            // If player finishes night 5, then play credits!
+            // Also give them a star
+            if (player_alive) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                    std::fstream::out | std::fstream::trunc);
+                if (std::stoi(stars_earned) < 1) {
+                    stars_earned = "1";
+                }
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+                // To do credits
+            }
+        }
+
+        if (selected_night == "Continue Game") {
+            // Continue the game until the player dies
+            // Update save each night
+
+            bool player_alive = true;
+            int continue_num = std::stoi(night_to_continue);
+
+            // Night 1
+            if (player_alive && continue_num == 1) {
+                Main_Game_Window night_1(rng, 1, 3, 2, 2, 0);
+                player_alive = night_1.Run();
+
+                if (player_alive) {
+                    fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                    std::fstream::out | std::fstream::trunc);
+                    night_to_continue = "2";
+                    fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                    fnascii_fstream.close();
+                    continue_num = std::stoi(night_to_continue);
+                }
+            }
+
+            // Night 2
+            if (player_alive && continue_num == 2) {
+                Main_Game_Window night_2(rng, 2, 6, 3, 3, 0);
+                player_alive = night_2.Run();
+
+                if (player_alive) {
+                    fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                    std::fstream::out | std::fstream::trunc);
+                    night_to_continue = "3";
+                    fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                    fnascii_fstream.close();
+                    continue_num = std::stoi(night_to_continue);
+                }
+            }
+
+            // Night 3
+            if (player_alive && continue_num == 3) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                                    std::fstream::out | std::fstream::trunc);
+                night_to_continue = "3";
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+
+                Main_Game_Window night_3(rng, 3, 3, 4, 7, 1);
+                player_alive = night_3.Run();
+
+                if (player_alive) {
+                    fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                        std::fstream::out | std::fstream::trunc);
+                    night_to_continue = "4";
+                    fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                    fnascii_fstream.close();
+                    continue_num = std::stoi(night_to_continue);
+                }
+            }
+
+            // Night 4
+            if (player_alive && continue_num == 4) {
+                Main_Game_Window night_4(rng, 4, 5, 8, 6, 2);
+                player_alive = night_4.Run();
+
+                if (player_alive) {
+                    fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                        std::fstream::out | std::fstream::trunc);
+                    night_to_continue = "5";
+                    fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                    fnascii_fstream.close();
+                    continue_num = std::stoi(night_to_continue);
+                }
+            }
+
+            // Night 5
+            if (player_alive && continue_num == 5) {
+                Main_Game_Window night_5(rng, 5, 8, 7, 9, 3);
+                player_alive = night_5.Run();
+            }
+
+            // If player finishes night 5, then play credits!
+            // Also give them a star
+            if (player_alive && continue_num == 5) {
+                fnascii_fstream.open("src/savefiles/fnascii_player_data.txt", std::fstream::in |
+                    std::fstream::out | std::fstream::trunc);
+                if (std::stoi(stars_earned) < 1) {
+                    stars_earned = "1";
+                }
+                fnascii_fstream << night_to_continue << std::endl << stars_earned;
+                fnascii_fstream.close();
+                // To do credits
+            }
+        }
+
+    }
 
     return 0;
 }
 
-Home_Screen_Window::Home_Screen_Window() {
+Home_Screen_Window::Home_Screen_Window(int night_number, int stars) {
     home_screen.close();
     home_screen.create(sf::VideoMode(1000, 900), "FNASCII", sf::Style::Close);
     home_screen.setFramerateLimit(60);
@@ -79,6 +281,22 @@ Home_Screen_Window::Home_Screen_Window() {
     freddy_sprite.setScale(sf::Vector2f(1.5, 1.5));
 
     text_font.loadFromFile("src/graphics/font/PixeloidSans.ttf");
+
+    title_text.setFont(text_font);
+    title_text.setString("FNASCII");
+    title_text.setCharacterSize(125);
+    title_text.setFillColor(sf::Color::White);
+    title_render_texture.create(title_text.getLocalBounds().width, title_text.getLocalBounds().height+75);
+    title_render_texture.clear(sf::Color::Transparent);
+    title_render_texture.draw(title_text);
+    title_render_texture.display();
+    title_sprite.setTexture(title_render_texture.getTexture());
+    title_sprite.setPosition(40, 40);
+
+    stars_texture.loadFromFile("src/graphics/white_star.png");
+    stars_sprite.setTexture(stars_texture);
+    stars_sprite.setScale(sf::Vector2f(0.5, 0.5));
+    this->stars = stars;
 
     select_game_text.setFont(text_font);
     select_game_text.setString(">");
@@ -104,7 +322,6 @@ Home_Screen_Window::Home_Screen_Window() {
 
     continue_game_text.setFont(text_font);
     continue_game_text.setString("Continue Game");
-    // Also write which night to continue from here
     continue_game_text.setCharacterSize(35);
     continue_game_text.setFillColor(sf::Color::White);
     continue_game_render_texture.create(continue_game_text.getLocalBounds().width, continue_game_text.getLocalBounds().height+10);
@@ -114,6 +331,18 @@ Home_Screen_Window::Home_Screen_Window() {
     continue_game_sprite.setTexture(continue_game_render_texture.getTexture());
     continue_game_sprite.setPosition(100, 600);
 
+    this->night_number = night_number;
+    continue_night_number_text.setFont(text_font);
+    std::string continue_night_number = "Night " + std::to_string(night_number);
+    continue_night_number_text.setString(continue_night_number);
+    continue_night_number_text.setCharacterSize(30);
+    continue_night_number_text.setFillColor(sf::Color::White);
+    continue_night_number_render_texture.create(continue_night_number_text.getLocalBounds().width, continue_night_number_text.getLocalBounds().height+10);
+    continue_night_number_render_texture.clear(sf::Color::Transparent);
+    continue_night_number_render_texture.draw(continue_night_number_text);
+    continue_night_number_render_texture.display();
+    continue_night_number_sprite.setTexture(continue_night_number_render_texture.getTexture());
+    continue_night_number_sprite.setPosition(continue_game_text.getLocalBounds().width + 125, 606);
 
     sixth_night_game_text.setFont(text_font);
     sixth_night_game_text.setString("6th Night");
@@ -157,9 +386,15 @@ void Home_Screen_Window::Update() {
 void Home_Screen_Window::Draw() {
     home_screen.clear();
     home_screen.draw(freddy_sprite);
+    home_screen.draw(title_sprite);
+    for (int i = 0; i < stars; i++) {
+        stars_sprite.setPosition(40 + i*130, 200);
+        home_screen.draw(stars_sprite);
+    }
     home_screen.draw(select_game_sprite);
     home_screen.draw(start_game_sprite);
     home_screen.draw(continue_game_sprite);
+    home_screen.draw(continue_night_number_sprite);
     home_screen.draw(sixth_night_game_sprite);
     home_screen.draw(custom_night_game_sprite);
     home_screen.display();
