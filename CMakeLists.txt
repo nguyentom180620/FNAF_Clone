@@ -43,6 +43,10 @@ add_executable(main src/main.cpp
         src/graphics/Chica_Graphic.h
         src/animatronics/Freddy/Freddy.cpp
         src/animatronics/Freddy/Freddy.h
+        src/tom_engine/game/Home_Screen_Window/Home_Screen_Window.cpp
+        src/tom_engine/game/Home_Screen_Window/Home_Screen_Window.h
+        src/tom_engine/game/Custom_Night_Settings_Window/Custom_Night_Settings_Window.cpp
+        src/tom_engine/game/Custom_Night_Settings_Window/Custom_Night_Settings_Window.h
 )
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio)
 target_compile_features(main PRIVATE cxx_std_17)

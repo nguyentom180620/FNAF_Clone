@@ -30,7 +30,7 @@ bonnie(bonnie_level), foxy(foxy_level), chica(chica_level), freddy(freddy_level)
     foxy_jumpscare = false;
     chica_jumpscare = false;
     freddy_jumpscare = false;
-    game_time = 533;
+    game_time = 0;
     game_win_timer = 60 * 10;
     power_zero_timer = 60 * 22;
     frame_counter_60 = 0;
