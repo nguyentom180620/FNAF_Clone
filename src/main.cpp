@@ -43,7 +43,7 @@ int main() {
             // Update save each night
 
             // Night 1
-            Main_Game_Window night_1(rng, 1, 3, 2, 2, 0);
+            Main_Game_Window night_1(rng, 1, 3, 0, 0, 0);
             bool player_alive = night_1.Run();
 
             // Night 2
@@ -54,7 +54,7 @@ int main() {
                 fnascii_fstream << night_to_continue << std::endl << stars_earned;
                 fnascii_fstream.close();
 
-                Main_Game_Window night_2(rng, 2, 6, 3, 3, 0);
+                Main_Game_Window night_2(rng, 2, 3, 1, 1, 0);
                 player_alive = night_2.Run();
             }
 
@@ -66,7 +66,7 @@ int main() {
                 fnascii_fstream << night_to_continue << std::endl << stars_earned;
                 fnascii_fstream.close();
 
-                Main_Game_Window night_3(rng, 3, 3, 4, 7, 1);
+                Main_Game_Window night_3(rng, 3, 0, 2, 5, 1);
                 player_alive = night_3.Run();
             }
 
@@ -78,7 +78,7 @@ int main() {
                 fnascii_fstream << night_to_continue << std::endl << stars_earned;
                 fnascii_fstream.close();
 
-                Main_Game_Window night_4(rng, 4, 5, 8, 6, 2);
+                Main_Game_Window night_4(rng, 4, 2, 6, 4, 2);
                 player_alive = night_4.Run();
             }
 
@@ -90,7 +90,7 @@ int main() {
                 fnascii_fstream << night_to_continue << std::endl << stars_earned;
                 fnascii_fstream.close();
 
-                Main_Game_Window night_5(rng, 5, 8, 7, 9, 3);
+                Main_Game_Window night_5(rng, 5, 5, 5, 7, 3);
                 player_alive = night_5.Run();
             }
 
@@ -114,7 +114,7 @@ int main() {
 
             // Night 1
             if (continue_num == 1) {
-                Main_Game_Window night_1(rng, 1, 3, 2, 2, 0);
+                Main_Game_Window night_1(rng, 1, 3, 0, 0, 0);
                 player_alive = night_1.Run();
 
                 if (player_alive) {
@@ -129,7 +129,7 @@ int main() {
 
             // Night 2
             if (player_alive && continue_num == 2) {
-                Main_Game_Window night_2(rng, 2, 6, 3, 3, 0);
+                Main_Game_Window night_2(rng, 2, 3, 1, 1, 0);
                 player_alive = night_2.Run();
 
                 if (player_alive) {
@@ -150,7 +150,7 @@ int main() {
                 fnascii_fstream << night_to_continue << std::endl << stars_earned;
                 fnascii_fstream.close();
 
-                Main_Game_Window night_3(rng, 3, 3, 4, 7, 1);
+                Main_Game_Window night_3(rng, 3, 0, 2, 5, 1);
                 player_alive = night_3.Run();
 
                 if (player_alive) {
@@ -165,7 +165,7 @@ int main() {
 
             // Night 4
             if (player_alive && continue_num == 4) {
-                Main_Game_Window night_4(rng, 4, 5, 8, 6, 2);
+                Main_Game_Window night_4(rng, 4, 2, 6, 4, 2);
                 player_alive = night_4.Run();
 
                 if (player_alive) {
@@ -180,7 +180,7 @@ int main() {
 
             // Night 5
             if (player_alive && continue_num == 5) {
-                Main_Game_Window night_5(rng, 5, 8, 7, 9, 3);
+                Main_Game_Window night_5(rng, 5, 5, 5, 7, 3);
                 player_alive = night_5.Run();
             }
 
@@ -195,7 +195,7 @@ int main() {
             }
         }
         if (selected_night == "6th Night") {
-            Main_Game_Window night_6(rng, 6, 13, 8, 14, 4);
+            Main_Game_Window night_6(rng, 6, 10, 6, 12, 4);
             bool player_alive = night_6.Run();
 
             if (player_alive) {
