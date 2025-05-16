@@ -107,7 +107,7 @@ Home_Screen_Window::Home_Screen_Window(int night_number, int stars) {
     select_sound.setVolume(50);
 
     // Music changes based on progress!
-    if (night_number < 5) {
+    if (stars < 1) {
         home_screen_music.openFromFile("src/sound/Fnascii_home_screen.wav");
     }
     else {
