@@ -481,6 +481,7 @@ void Main_Game_Window::Update() {
                     entered_office = true;
                 }
                 else {
+                    night.moveAnimatronic(bonnie);
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
                     bonnie_sound_playing = false;
@@ -492,6 +493,7 @@ void Main_Game_Window::Update() {
                     entered_office = true;
                 }
                 else {
+                    night.moveAnimatronic(chica);
                     leaving_door_sound.setBuffer(leaving_door_sound_buffer);
                     leaving_door_sound.play();
                     chica_sound_playing = false;
