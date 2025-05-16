@@ -385,38 +385,30 @@ void Main_Game_Window::Update() {
         }
         switch (game_time) {
             case 0:
-                std::cout << "12 AM" << std::endl;
             break;
             case 90:
                 clock_text.setString("1 AM, Night " + std::to_string(night_number));
-                std::cout << "1 AM" << std::endl;
             break;
             case 179:
                 clock_text.setString("2 AM, Night " + std::to_string(night_number));
-                std::cout << "2 AM" << std::endl;
             break;
             case 268:
                 clock_text.setString("3 AM, Night " + std::to_string(night_number));
-                std::cout << "3 AM" << std::endl;
             break;
             case 357:
                 clock_text.setString("4 AM, Night " + std::to_string(night_number));
-                std::cout << "4 AM" << std::endl;
             break;
             case 446:
                 clock_text.setString("5 AM, Night " + std::to_string(night_number));
-                std::cout << "5 AM" << std::endl;
             break;
             case GAME_LENGTH:
                 clock_text.setString("6 AM, Night " + std::to_string(night_number));
-                std::cout << "6 AM" << std::endl;
             break;
             default: break;
         }
         if (night.animatronicInOffice() && battery_power > 0) {
             if (night.animatronicInOfficeName() == "Bonnie") {
                 if (bonnie_jumpscare_counter >= 3) {
-                    std::cout << "Bonnie Jumpscare!" << std::endl;
                     player_alive = false;
                     night_lose = true;
                     bonnie_jumpscare = true;
@@ -425,7 +417,6 @@ void Main_Game_Window::Update() {
             }
             if (night.animatronicInOfficeName() == "Chica") {
                 if (chica_jumpscare_counter >= 3) {
-                    std::cout << "Chica Jumpscare!" << std::endl;
                     player_alive = false;
                     night_lose = true;
                     chica_jumpscare = true;
@@ -434,7 +425,6 @@ void Main_Game_Window::Update() {
             }
             if (night.animatronicInOfficeName() == "Freddy") {
                 if (freddy_jumpscare_counter >= 3) {
-                    std::cout << "Freddy Jumpscare!" << std::endl;
                     player_alive = false;
                     night_lose = true;
                     freddy_jumpscare = true;
@@ -522,7 +512,6 @@ void Main_Game_Window::Update() {
                 if (bonnie.getLevel() >= random_move_value_bonnie) {
                     night.moveAnimatronic(bonnie);
                 }
-                night.findAnimatronic(bonnie);
 
                 // Foxy
                 int random_move_value_foxy = uid(rng);
@@ -535,14 +524,12 @@ void Main_Game_Window::Update() {
                         }
                     }
                 }
-                night.findAnimatronic(foxy);
 
                 // Chica
                 int random_move_value_chica = uid(rng);
                 if (chica.getLevel() >= random_move_value_chica) {
                     night.moveAnimatronic(chica);
                 }
-                night.findAnimatronic(chica);
 
                 // Freddy
                 if (!(cam_mode == true && night.findAnimatronicCamName(freddy) == active_cam)) {
@@ -563,7 +550,6 @@ void Main_Game_Window::Update() {
                         night.moveAnimatronic(freddy);
                     }
                 }
-                night.findAnimatronic(freddy);
             }
             move_count = 0;
         }

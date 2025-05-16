@@ -23,10 +23,6 @@ void Game_Night_Backend::moveAnimatronic(Base_Animatronic& base) {
     if (map.find(base) == map.accessCam(oldCamString)) {
         map.moveAnimatronic(base, map.accessCam(oldCamString), map.accessCam(newCamString));
     }
-    else {
-        std::cout << "Something went wrong in the Game_Night_Backend::moveAnimatronic(Base_Animatronic& base) function!"
-        << std::endl;
-    }
 }
 
 // This function should only be called when animatronics are at a door
@@ -35,10 +31,6 @@ void Game_Night_Backend::enterOffice(Base_Animatronic &base) {
     if (map.find(base) == map.accessCam(door)) {
         map.accessCam(door).removeAnimatronic(base);
         office = &base;
-        std::cout << base.getName() << " entered the office!" << std::endl;
-    }
-    else {
-        std::cout << "Something went wrong in Game_Night_Backend::enterOffice (Shouldn't be called right now)" << std::endl;
     }
 }
 
@@ -113,14 +105,7 @@ void Game_Night_Backend::playNight() {
             move_count = 0;
         }
         move_count++;
-        map.printCamContent(input);
         gameTime += 1;
-    }
-    if (playerAlive) {
-        std::cout << "6:00 AM! You lived!" << std::endl;
-    }
-    else {
-        std::cout << "You died..." << std::endl;
     }
 }
 
@@ -186,7 +171,6 @@ void Game_Night_Backend::playLiveNight() {
                     enteredOffice = true;
                 }
                 else {
-                    std::cout << "Bonnie hit the door, he's gone now but broke the door!" << std::endl;
                     doorClosed = false;
                 }
             }
@@ -196,17 +180,7 @@ void Game_Night_Backend::playLiveNight() {
             move_count = 0;
         }
         move_count++;
-        if (input != "") {
-            map.printCamContent(input);
-            input = "";
-        }
         gameTime += 1;
-    }
-    if (playerAlive) {
-        std::cout << "6:00 AM! You lived!" << std::endl;
-    }
-    else {
-        std::cout << "You died..." << std::endl;
     }
 }
 

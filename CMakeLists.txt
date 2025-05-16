@@ -10,7 +10,7 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp
+add_executable(main WIN32 src/main.cpp src/graphics/icon/resources.rc
         src/map/Map.h
         src/map/Map.cpp
         src/animatronics/Base_Animatronic/Base_Animatronic.h

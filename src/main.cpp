@@ -20,16 +20,12 @@ int main() {
         std::fstream fnascii_fstream("src/savefiles/fnascii_player_data.txt");
         std::string night_to_continue;
         getline(fnascii_fstream, night_to_continue);
-        std::cout << "Night to continue from: " << night_to_continue << std::endl;
 
         std::string stars_earned;
         getline(fnascii_fstream, stars_earned);
-        std::cout << "Stars earned: " << stars_earned << std::endl;
 
         Home_Screen_Window home_screen(std::stoi(night_to_continue), std::stoi(stars_earned));
         std::string selected_night = home_screen.Run();
-
-        std::cout << "Selected Night: " << selected_night << std::endl;
 
         fnascii_fstream.close();
 
